@@ -89,7 +89,7 @@
                       <button class="btn btn-primary w-100" type="submit">로그인</button>
                     </div>
                     <div class="col-12 d-flex justify-content-between">
-                      <a href="/">아이디 찾기</a>
+                      <a href="#" id="findId">아이디 찾기</a>
                       <a href="/">비밀번호 찾기</a>
                     </div>
 
@@ -119,6 +119,26 @@
   </main><!-- End #main -->
 
   <a href="#" class="back-to-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
+
+  <!-- 아이디 찾기 modal-->
+  <div class="modal fade" id="verticalycentered" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">아이디 찾기</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <p>회원님의 이메일을 입력해 주세요.</p>
+          <input type="email" class="form-control" id="emailForIdFind" placeholder="이메일 주소">
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-primary">찾기</button>
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
+        </div>
+      </div>
+    </div>
+  </div>
 
   <!-- Vendor JS Files -->
   <script src="assets/vendor/apexcharts/apexcharts.min.js"></script>
