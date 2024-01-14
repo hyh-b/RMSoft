@@ -6,11 +6,23 @@
         values (#{memberId}, #{password}, #{name}, #{email}, #{address}, #{phone}, 'USER')
     </insert>
 
-    <select id="idCheck" resultType="boolean" parameterType="string">
-        select exists(select 1 from member where member_id = #{memberId});
+    <select id="idCheck" resultType="Boolean" parameterType="String">
+        select exists(select 1 from member where member_id = #{memberId})
     </select>
 
-    <select id="memberInformation" parameterType="string" resultType="com.example.rmsoft.dto.MemberDto">
+    <select id="memberInformation" parameterType="String" resultType="com.example.rmsoft.dto.MemberDto">
         select * from member where member_id = #{member_id}
     </select>
+
+    <select id="findId" parameterType="String" resultType="String">
+        select member_id from member where email = #{email}
+    </select>
+
+    <select id="findPassword" resultType="Boolean">
+        select exists(select 1 from member where member_id = #{memberId} and email = #{email})
+    </select>
+
+    <update id="resetPassword">
+        update member set password = #{password} where member_id = #{memberId}
+    </update>
 </mapper>
