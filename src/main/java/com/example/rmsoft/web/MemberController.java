@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
@@ -54,9 +55,12 @@ public class MemberController {
         return ResponseEntity.ok("비밀번호 재설정 이메일을 전송했습니다");
     }
 
-    /* 비밀번호 재설정 api*/
-    @PostMapping("/api/signin/resetPassword")
-    public ResponseEntity<?> resetPassword(@RequestParam String token, @RequestParam String password) {
+    // 비밀번호 재설정 api
+    @PatchMapping("/api/password/reset")
+    public ResponseEntity<?> resetPassword(@RequestBody Map<String,Object> requestBody) {
+        String token = (String) requestBody.get("token");
+        String password = (String) requestBody.get("password");
+
         String memberId = jwtTokenUtil.validateTokenAndGetMemberId(token);
         if (memberId == null) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("잘못된 요청입니다");
