@@ -195,7 +195,7 @@
                   <div class="tab-pane fade show active" id="home-justified" role="tabpanel" aria-labelledby="home-tab">
                     Basic타입은 이용자를 위한 10가지 기능을 제공하며 50인 이하의 회사에 적합한 솔루션입니다.<br>
                     스토리지 용량에 따라 4가지 버전으로 나뉩니다.<br>
-                    가격: Basic1 - 70,000￦, Basic2 - 90,000￦, Basic3 - 150,000￦, Basic4 - 20,0000￦
+                    가격: Basic1 - 70,000￦, Basic2 - 90,000￦, Basic3 - 150,000￦, Basic4 - 200,000￦
                   </div>
                   <div class="tab-pane fade" id="profile-justified" role="tabpanel" aria-labelledby="profile-tab">
                     Standard타입은 이용자를 위한 15가지 기능을 제공하며 50인 이상 300인 이하의 회사에 적합한 솔루션입니다.<br>
@@ -251,14 +251,12 @@
                     </div>
                   </div>
 
-
-
                   <div class="row subscription mb-3" style="display: none;">
                     <div class="col-sm-12">
                       <div class="row">
                         <div class="col-sm-4 label">서비스명</div>
-                        <div class="col-sm-4">basic1</div>
-                        <div class="col-sm-4">15000원</div>
+                        <div class="col-sm-4" id="serviceName"></div>
+                        <div class="col-sm-4" id="servicePrice"></div>
                       </div>
                     </div>
                   </div>
@@ -451,6 +449,41 @@
       }
     });
 
+    function showServiceNameAndPrice() {
+      var serviceType = $('#serviceType').val();
+      var storage = $('#storageCapacity').val();
+
+      $.ajax({
+        url: '/api/service/type',
+        type: 'GET',
+        dataType: 'json',
+        data: {
+          serviceType: serviceType,
+          storage: storage
+        },
+        success: function(response) {
+          var serviceName = $('#serviceName');
+          var servicePrice = $('#servicePrice');
+          var subscriptPeriod = $('#subscriptPeriod').val();
+          console.log(response);
+          console.log("타입 "+response.type);
+          console.log("가격 "+response.price);
+          serviceName.text(response.type);
+          servicePrice.text(response.price*subscriptPeriod+"원");
+        },
+        error: function() {
+          console.log('에러가 발생했습니다.');
+        }
+      });
+    }
+
+    document.getElementById('storageCapacity').addEventListener('change', function() {
+      showServiceNameAndPrice();
+    })
+
+    document.getElementById('subscriptPeriod').addEventListener('change', function() {
+      showServiceNameAndPrice();
+    })
   </script>
 
 </body>
