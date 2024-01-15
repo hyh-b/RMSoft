@@ -1,8 +1,6 @@
 package com.example.rmsoft.web;
 
-import com.example.rmsoft.dto.MemberDto;
 import com.example.rmsoft.jwtToken.JwtTokenUtil;
-import com.example.rmsoft.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -20,9 +18,8 @@ public class IndexController {
     @GetMapping("/")
     public String index(Model model){
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String memberName;
         if(authentication != null) {
-            memberName = authentication.getName();
+            String memberName = authentication.getName();
             model.addAttribute("memberName",memberName);
         }
         return "index";
@@ -31,6 +28,16 @@ public class IndexController {
     @GetMapping("/dashboard")
     public String dashboard(){
         return "dashboard";
+    }
+
+    @GetMapping("/serviceApplication")
+    public String serviceApplication(Model model){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if(authentication != null) {
+            String memberName = authentication.getName();
+            model.addAttribute("memberName",memberName);
+        }
+        return "service-application";
     }
 
     @GetMapping("/signup")
@@ -49,6 +56,6 @@ public class IndexController {
         if (memberId == null) {
             return "redirect:/signin?expiredPage";
         }
-        return "resetPassword";
+        return "reset-password";
     }
 }

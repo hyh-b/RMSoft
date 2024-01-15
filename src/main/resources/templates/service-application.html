@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<head>
+  <meta charset="utf-8">
+  <meta content="width=device-width, initial-scale=1.0" name="viewport">
+
+  <title>서비스 신청</title>
+  <meta content="" name="description">
+  <meta content="" name="keywords">
+
+  <!-- Favicons -->
+  <link href="assets/img/favicon.png" rel="icon">
+  <link href="assets/img/apple-touch-icon.png" rel="apple-touch-icon">
+
+  <!-- Google Fonts -->
+  <link href="https://fonts.gstatic.com" rel="preconnect">
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i|Nunito:300,300i,400,400i,600,600i,700,700i|Poppins:300,300i,400,400i,500,500i,600,600i,700,700i" rel="stylesheet">
+
+  <!-- Vendor CSS Files -->
+  <link href="assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+  <link href="assets/vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
+  <link href="assets/vendor/boxicons/css/boxicons.min.css" rel="stylesheet">
+  <link href="assets/vendor/quill/quill.snow.css" rel="stylesheet">
+  <link href="assets/vendor/quill/quill.bubble.css" rel="stylesheet">
+  <link href="assets/vendor/remixicon/remixicon.css" rel="stylesheet">
+  <link href="assets/vendor/simple-datatables/style.css" rel="stylesheet">
+
+  <!-- Template Main CSS File -->
+  <link href="assets/css/style.css" rel="stylesheet">
+
+  <!-- =======================================================
+  * Template Name: NiceAdmin
+  * Updated: Jan 09 2024 with Bootstrap v5.3.2
+  * Template URL: https://bootstrapmade.com/nice-admin-bootstrap-admin-html-template/
+  * Author: BootstrapMade.com
+  * License: https://bootstrapmade.com/license/
+  ======================================================== -->
+</head>
+
+<body>
+
+  <!-- ======= Header ======= -->
+  <header id="header" class="header fixed-top d-flex align-items-center">
+
+    <div class="d-flex align-items-center justify-content-between">
+      <a href="/" class="logo d-flex align-items-center">
+        <img src="assets/img/logo.png" alt="">
+        <span class="d-none d-lg-block">알엠소프트</span>
+      </a>
+      <i class="bi bi-list toggle-sidebar-btn"></i>
+    </div><!-- End Logo -->
+
+    <th:block sec:authorize="isAuthenticated()">
+      <nav class="header-nav ms-auto">
+        <ul class="d-flex align-items-center">
+
+          <li class="nav-item dropdown pe-3">
+
+            <a class="nav-link nav-profile d-flex align-items-center pe-0" href="#" data-bs-toggle="dropdown">
+              <span class="d-none d-md-block dropdown-toggle ps-2" th:text="${memberName}+'님'"></span>
+            </a><!-- End Profile Iamge Icon -->
+
+            <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow profile">
+              <li>
+                <a class="dropdown-item d-flex align-items-center" href="/dashboard">
+                  <i class="bi bi-grid"></i>
+                  <span>대시보드</span>
+                </a>
+              </li>
+              <li>
+                <hr class="dropdown-divider">
+              </li>
+
+              <li>
+                <a class="dropdown-item d-flex align-items-center" href="/serviceApplication">
+                  <i class="bi bi-journal-text"></i>
+                  <span>서비스 신청</span>
+                </a>
+              </li>
+              <li>
+                <hr class="dropdown-divider">
+              </li>
+
+              <li>
+                <a class="dropdown-item d-flex align-items-center" href="/extensionSubscription">
+                  <i class="bi bi-journal-text"></i>
+                  <span>구독 연장</span>
+                </a>
+              </li>
+              <li>
+                <hr class="dropdown-divider">
+              </li>
+
+              <li>
+                <a class="dropdown-item d-flex align-items-center" href="/logout">
+                  <i class="bi bi-box-arrow-right"></i>
+                  <span>로그아웃</span>
+                </a>
+              </li>
+            </ul><!-- End Profile Dropdown Items -->
+          </li><!-- End Profile Nav -->
+
+        </ul>
+      </nav><!-- End Icons Navigation -->
+    </th:block>
+  </header><!-- End Header -->
+
+  <!-- ======= Sidebar ======= -->
+  <aside id="sidebar" class="sidebar">
+
+    <ul class="sidebar-nav" id="sidebar-nav">
+
+      <li class="nav-item">
+        <a class="nav-link collapsed" href="/dashboard">
+          <i class="bi bi-grid"></i>
+          <span>대시보드</span>
+        </a>
+      </li>
+
+      <li class="nav-item">
+        <a class="nav-link" href="/serviceApplication">
+          <i class="bi bi-journal-text"></i>
+          <span>서비스 신청</span>
+        </a>
+      </li>
+
+      <li class="nav-item">
+        <a class="nav-link collapsed" href="/extensionSubscription">
+          <i class="bi bi-journal-text"></i>
+          <span>구독 연장</span>
+        </a>
+      </li>
+
+      <div sec:authorize="!isAuthenticated()">
+        <li class="nav-item">
+          <a class="nav-link collapsed" href="/signup">
+            <i class="bi bi-card-list"></i>
+            <span>회원가입</span>
+          </a>
+        </li>
+      </div>
+
+      <div sec:authorize="!isAuthenticated()">
+        <li class="nav-item">
+          <a class="nav-link collapsed" href="/signin">
+            <i class="bi bi-box-arrow-in-right"></i>
+            <span>로그인</span>
+          </a>
+        </li><!-- End Login Page Nav -->
+      </div>
+
+      <div sec:authorize="isAuthenticated()">
+        <li class="nav-item">
+          <a class="nav-link collapsed" href="/logout">
+            <i class="bi bi-box-arrow-right"></i>
+            <span>로그아웃</span>
+          </a>
+        </li>
+      </div>
+
+    </ul>
+
+  </aside><!-- End Sidebar-->
+
+  <main id="main" class="main">
+
+    <div class="pagetitle">
+      <h1>RM솔루션</h1>
+
+    </div><!-- End Page Title -->
+
+    <section class="section">
+      <div class="row justify-content-center">
+        <div class="col-lg-6">
+
+          <div class="card">
+            <div class="card-body">
+              <h5 class="card-title">서비스 신청 (*)필수</h5>
+
+              <!-- General Form Elements -->
+              <form class="needs-validation" novalidate>
+                <ul class="nav nav-tabs d-flex" id="myTabjustified" role="tablist">
+                  <li class="nav-item flex-fill" role="presentation">
+                    <button class="nav-link w-100 active" id="home-tab" data-bs-toggle="tab" data-bs-target="#home-justified" type="button" role="tab" aria-controls="home" aria-selected="true">Basic</button>
+                  </li>
+                  <li class="nav-item flex-fill" role="presentation">
+                    <button class="nav-link w-100" id="profile-tab" data-bs-toggle="tab" data-bs-target="#profile-justified" type="button" role="tab" aria-controls="profile" aria-selected="false">Standard</button>
+                  </li>
+                  <li class="nav-item flex-fill" role="presentation">
+                    <button class="nav-link w-100" id="contact-tab" data-bs-toggle="tab" data-bs-target="#contact-justified" type="button" role="tab" aria-controls="contact" aria-selected="false">Premium</button>
+                  </li>
+                </ul>
+                <div class="tab-content pt-2" id="myTabjustifiedContent">
+                  <div class="tab-pane fade show active" id="home-justified" role="tabpanel" aria-labelledby="home-tab">
+                    Basic타입은 이용자를 위한 10가지 기능을 제공하며 50인 이하의 회사에 적합한 솔루션입니다.<br>
+                    스토리지 용량에 따라 4가지 버전으로 나뉩니다.<br>
+                    가격: Basic1 - 70,000￦, Basic2 - 90,000￦, Basic3 - 150,000￦, Basic4 - 20,0000￦
+                  </div>
+                  <div class="tab-pane fade" id="profile-justified" role="tabpanel" aria-labelledby="profile-tab">
+                    Standard타입은 이용자를 위한 15가지 기능을 제공하며 50인 이상 300인 이하의 회사에 적합한 솔루션입니다.<br>
+                    스토리지 용량에 따라 4가지 버전으로 나뉩니다.<br>
+                    가격: Standard1 - 120,000￦, Standard2 - 140,000￦, Standard3 - 200,000￦, Standard4 - 250,000￦
+                  </div>
+                  <div class="tab-pane fade" id="contact-justified" role="tabpanel" aria-labelledby="contact-tab">
+                    Premium타입은 이용자를 위한 20가지 기능을 제공하며 300인 이상의 회사에 적합한 솔루션입니다.<br>
+                    스토리지 용량에 따라 4가지 버전으로 나뉩니다.<br>
+                    가격: Premium1 - 220,000￦, Premium2 - 240,000￦, Premium3 - 300,000￦, Premium4 - 350,000￦
+                  </div>
+                </div><!-- End Default Tabs -->
+
+                <div class="row mb-3 border p-3">
+                  <div class="row mb-3">
+                    <label class="col-sm-4 col-form-label">서비스 타입(*)</label>
+                    <div class="col-sm-8">
+                      <select class="form-select form-control" id="serviceType" aria-label="Default select example" required>
+                        <option value="" selected disabled hidden>서비스 타입을 선택해주세요</option>
+                        <option value="Basic">Basic</option>
+                        <option value="Standard">Standard</option>
+                        <option value="Premium">Premium</option>
+                      </select>
+                    </div>
+                  </div>
+
+
+                  <div class="row mb-3 storage" style="display: none;">
+                    <div class="col-sm-12">
+                      <div class="row">
+                        <label class="col-sm-4 col-form-label">스토리지 용량(TB)(*)</label>
+                        <div class="col-sm-8">
+                          <select class="form-select" id="storageCapacity" aria-label="Default select example" required>
+                            <option value="" selected disabled hidden>용량을 선택해주세요</option>
+                            <option value="5">5</option>
+                            <option value="10">10</option>
+                            <option value="30">30</option>
+                            <option value="50">50</option>
+                          </select>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="row mb-3 subscription" style="display: none;">
+                    <div class="col-sm-12">
+                      <div class="row">
+                        <label for="subscriptPeriod" class="col-sm-4 col-form-label">구독 기간(월)(*)</label>
+                        <div class="col-sm-8">
+                          <input type="number" id="subscriptPeriod" class="form-control" required min="1" value="1">
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+
+
+                  <div class="row subscription mb-3" style="display: none;">
+                    <div class="col-sm-12">
+                      <div class="row">
+                        <div class="col-sm-4 label">서비스명</div>
+                        <div class="col-sm-4">basic1</div>
+                        <div class="col-sm-4">15000원</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="row mb-3">
+                  <label for="numberOfUsers" class="col-sm-4 col-form-label">사용인원(*)</label>
+                  <div class="col-sm-8">
+                    <input type="number" id="numberOfUsers" class="form-control" min="1" value="1" required>
+                  </div>
+                </div>
+
+                <div class="row mb-3">
+                  <label for="subscriptionStartDate" class="col-sm-4 col-form-label">구독 시작일(*)</label>
+                  <div class="col-sm-8">
+                    <input type="date" id="subscriptionStartDate" class="form-control" required>
+                  </div>
+                </div>
+
+                <div class="row mb-3">
+                  <label for="corporateName" class="col-sm-4 col-form-label">회사명</label>
+                  <div class="col-sm-8">
+                    <input type="text" class="form-control" id="corporateName">
+                  </div>
+                </div>
+
+                <div class="row mb-3">
+                  <label for="email" class="col-sm-4 col-form-label">Email</label>
+                  <div class="col-sm-8">
+                    <input type="email" class="form-control" id="email">
+                  </div>
+                </div>
+
+                <div class="row mb-3">
+                  <label class="col-sm-2 form-label">전화번호</label>
+                  <div class="col-sm-10">
+                    <div class="row">
+                      <div class="col">
+                        <input type="number" class="form-control" id="phone1">
+                      </div>
+                      <div class="col">
+                        <input type="number" class="form-control" id="phone2">
+                      </div>
+                      <div class="col">
+                        <input type="number" class="form-control" id="phone3">
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+
+                <div class="col-12">
+                  <label for="sample6_postcode" class="form-label">주소</label>
+                  <input type="text" id="sample6_postcode" class="form-control" placeholder="우편번호"><br>
+                  <input type="button" class="btn btn-primary " onclick="sample6_execDaumPostcode()" value="우편번호 찾기"><br><br>
+                  <input type="text" class="form-control" id="sample6_address" placeholder="주소"><br>
+                  <input type="text" class="form-control" id="sample6_detailAddress" placeholder="상세주소"><br>
+                  <input type="text" class="form-control" id="sample6_extraAddress" placeholder="참고항목">
+                  <div class="invalid-feedback">주소를 입력해주세요</div>
+                </div>
+                <br>
+                <div class="col-12 d-flex justify-content-center">
+                    <button type="submit" id="serviceButton" class="btn btn-primary">신청하기</button>
+                </div>
+
+              </form><!-- End General Form Elements -->
+
+            </div>
+          </div>
+
+
+
+        </div>
+
+        </div>
+      </div>
+    </section>
+
+  </main><!-- End #main -->
+  <!-- ======= Footer ======= -->
+  <footer id="footer" class="footer">
+    <div class="copyright">
+      &copy; Copyright <strong><span>NiceAdmin</span></strong>. All Rights Reserved
+    </div>
+    <div class="credits">
+      <!-- All the links in the footer should remain intact. -->
+      <!-- You can delete the links only if you purchased the pro version. -->
+      <!-- Licensing information: https://bootstrapmade.com/license/ -->
+      <!-- Purchase the pro version with working PHP/AJAX contact form: https://bootstrapmade.com/nice-admin-bootstrap-admin-html-template/ -->
+      Designed by <a href="https://bootstrapmade.com/">BootstrapMade</a>
+    </div>
+  </footer><!-- End Footer -->
+
+  <a href="#" class="back-to-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
+
+  <!-- Vendor JS Files -->
+  <script src="assets/vendor/apexcharts/apexcharts.min.js"></script>
+  <script src="assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+  <script src="assets/vendor/chart.js/chart.umd.js"></script>
+  <script src="assets/vendor/echarts/echarts.min.js"></script>
+  <script src="assets/vendor/quill/quill.min.js"></script>
+  <script src="assets/vendor/simple-datatables/simple-datatables.js"></script>
+  <script src="assets/vendor/tinymce/tinymce.min.js"></script>
+  <script src="assets/vendor/php-email-form/validate.js"></script>
+
+  <!-- Template Main JS File -->
+  <script src="assets/js/main.js"></script>
+
+  <!--jquery-->
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+  <script>
+    //다음 주소 api
+    function sample6_execDaumPostcode() {
+      new daum.Postcode({
+        oncomplete: function(data) {
+          // 팝업에서 검색결과 항목을 클릭했을때 실행할 코드를 작성하는 부분.
+
+          // 각 주소의 노출 규칙에 따라 주소를 조합한다.
+          // 내려오는 변수가 값이 없는 경우엔 공백('')값을 가지므로, 이를 참고하여 분기 한다.
+          var addr = ''; // 주소 변수
+          var extraAddr = ''; // 참고항목 변수
+
+          //사용자가 선택한 주소 타입에 따라 해당 주소 값을 가져온다.
+          if (data.userSelectedType === 'R') { // 사용자가 도로명 주소를 선택했을 경우
+            addr = data.roadAddress;
+          } else { // 사용자가 지번 주소를 선택했을 경우(J)
+            addr = data.jibunAddress;
+          }
+
+          // 사용자가 선택한 주소가 도로명 타입일때 참고항목을 조합한다.
+          if(data.userSelectedType === 'R'){
+            // 법정동명이 있을 경우 추가한다. (법정리는 제외)
+            // 법정동의 경우 마지막 문자가 "동/로/가"로 끝난다.
+            if(data.bname !== '' && /[동|로|가]$/g.test(data.bname)){
+              extraAddr += data.bname;
+            }
+            // 건물명이 있고, 공동주택일 경우 추가한다.
+            if(data.buildingName !== '' && data.apartment === 'Y'){
+              extraAddr += (extraAddr !== '' ? ', ' + data.buildingName : data.buildingName);
+            }
+            // 표시할 참고항목이 있을 경우, 괄호까지 추가한 최종 문자열을 만든다.
+            if(extraAddr !== ''){
+              extraAddr = ' (' + extraAddr + ')';
+            }
+            // 조합된 참고항목을 해당 필드에 넣는다.
+            document.getElementById("sample6_extraAddress").value = extraAddr;
+
+          } else {
+            document.getElementById("sample6_extraAddress").value = '';
+          }
+
+          // 우편번호와 주소 정보를 해당 필드에 넣는다.
+          document.getElementById('sample6_postcode').value = data.zonecode;
+          document.getElementById("sample6_address").value = addr;
+          // 커서를 상세주소 필드로 이동한다.
+          document.getElementById("sample6_detailAddress").focus();
+        }
+      }).open();
+    }
+
+    $(document).ready(function() {
+      var today = new Date().toISOString().split('T')[0];
+      document.getElementById("subscriptionStartDate").setAttribute('min', today);
+    });
+
+    document.getElementById('serviceType').addEventListener('change', function() {
+      var storageSection = document.querySelector('.storage');
+      var subscriptionSection = document.querySelectorAll('.subscription');
+      if (this.value) {
+        storageSection.style.display = 'block';
+      } else {
+        storageSection.style.display = 'none';
+        subscriptionSection.forEach(function(section) {
+          section.style.display = 'none';
+        });
+      }
+    });
+
+    document.getElementById('storageCapacity').addEventListener('change', function() {
+      var subscriptionSection = document.querySelectorAll('.subscription');
+      if (this.value) {
+        subscriptionSection.forEach(function(section) {
+          section.style.display = 'block';
+        });
+      } else {
+        subscriptionSection.forEach(function(section) {
+          section.style.display = 'none';
+        });
+      }
+    });
+
+  </script>
+
+</body>
+
+</html>

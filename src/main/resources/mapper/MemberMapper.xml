@@ -1,27 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.example.rmsoft.mapper.MemberMapper">
+    <!-- 회원가입 -->
     <insert id="signupMember">
         insert into member (member_id, password, name, email, address, phone, role)
         values (#{memberId}, #{password}, #{name}, #{email}, #{address}, #{phone}, 'USER')
     </insert>
-
+    <!-- 아이디 중복 확인 -->
     <select id="idCheck" resultType="Boolean" parameterType="String">
         select exists(select 1 from member where member_id = #{memberId})
     </select>
-
+    <!-- 유저 정보 -->
     <select id="memberInformation" parameterType="String" resultType="com.example.rmsoft.dto.MemberDto">
         select * from member where member_id = #{member_id}
     </select>
-
+    <!-- 아이디 찾기 -->
     <select id="findId" parameterType="String" resultType="String">
         select member_id from member where email = #{email}
     </select>
-
+    <!-- 비밀번호 찾기 -->
     <select id="findPassword" resultType="Boolean">
         select exists(select 1 from member where member_id = #{memberId} and email = #{email})
     </select>
-
+    <!-- 비밀번호 재설정 -->
     <update id="resetPassword">
         update member set password = #{password} where member_id = #{memberId}
     </update>
