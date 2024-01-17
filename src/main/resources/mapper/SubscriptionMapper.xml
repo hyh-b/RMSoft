@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.rmsoft.mapper.SubscriptionMapper">
+    <!-- 서비스 신청 -->
+    <insert id="createSubscription" parameterType="com.example.rmsoft.dto.SubscriptionDto">
+        INSERT INTO subscription (
+            member_id, service_code, user_count, payment_amount, subscription_period,
+            subscription_start_date, subscription_end_date, subscription_status,
+            company_name, phone, email, address
+        )
+        VALUES (
+                   #{memberId}, #{serviceCode}, #{userCount}, #{paymentAmount}, #{subscriptionPeriod},
+                   #{subscriptionStartDate}, #{subscriptionEndDate}, #{subscriptionStatus},
+                   #{companyName}, #{phone}, #{email}, #{address}
+               )
+    </insert>
+</mapper>
