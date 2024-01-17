@@ -35,4 +35,5 @@ public class SubscriptionService {
 
         subscriptionMapper.createSubscription(subscriptionDto);
     }
+
 }

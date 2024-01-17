@@ -14,4 +14,8 @@
                    #{companyName}, #{phone}, #{email}, #{address}
                )
     </insert>
+
+    <update id="updateSubscriptionEndDate">
+        update subscription set subscription_end_date = #{extensionEndDate} where subscription_code = #{subscriptionCode}
+    </update>
 </mapper>
