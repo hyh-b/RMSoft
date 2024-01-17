@@ -14,8 +14,12 @@
                    #{companyName}, #{phone}, #{email}, #{address}
                )
     </insert>
-
+    <!-- 구독 종료일 갱신-->
     <update id="updateSubscriptionEndDate">
         update subscription set subscription_end_date = #{extensionEndDate} where subscription_code = #{subscriptionCode}
+    </update>
+    <!-- 구독 상태 갱신-->
+    <update id="updateSubscriptionStatus">
+        update subscription set subscription_status = 'N' where subscription_end_date &lt; curdate() and subscription_status = 'S'
     </update>
 </mapper>

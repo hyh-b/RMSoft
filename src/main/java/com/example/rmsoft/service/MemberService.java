@@ -21,34 +21,36 @@ public class MemberService {
 
     private final PasswordEncoder passwordEncoder;
 
-    /*회원가입 메서드*/
+    // 회원가입
     public void signupMember(MemberDto member) {
+        // 비밀번호 인코딩
         String encodedPassword = passwordEncoder.encode(member.getPassword());
         member.setPassword(encodedPassword);
         memberMapper.signupMember(member);
     }
-    /* 아아디 중복 환인 메서드*/
+    // 아아디 중복 환인
     public boolean idCheck(String memberId) {
         return memberMapper.idCheck(memberId);
     }
 
-    /* 로그인 시도한 유저 정보 */
+    // 로그인 시도한 유저 정보
     public MemberDto memberInformation(String member_id) {
         return  memberMapper.memberInformation(member_id);
     }
 
-    /* 아이디 찾기 메서드*/
+    // 아이디 찾기
     public List<String> findId(String email) {
         return memberMapper.findId(email);
     }
 
-    /* 비밀번호 찾기 메서드*/
+    // 비밀번호 찾기
     public boolean findPassword(String memberId, String email) {
         return memberMapper.findPassword(memberId, email);
     }
 
-    /* 비밀번호 재설정 메서드*/
+    // 비밀번호 재설정
     public void resetPassword(String memberId, String password) {
+        // 비밀번호 인코딩
         String encodedPassword = passwordEncoder.encode(password);
         memberMapper.resetPassword(memberId, encodedPassword);
     }

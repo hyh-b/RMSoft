@@ -32,6 +32,7 @@ function setupEventListeners() {
     findPasswordmodal._element.addEventListener('hidden.bs.modal', function() {
         $('#idForPasswordFind').val('');
         $('#emailForPasswordFind').val('');
+        hideSpinner();
     });
 }
 
@@ -51,8 +52,9 @@ function findId() {
                 resultDiv.text('해당 이메일로 등록된 아이디가 없습니다.');
             }
         },
-        error: function() {
-            console.log('에러가 발생했습니다.');
+        error: function(error) {
+            alert('아이디 찾기 실패');
+            console.log('에러 발생: ',error);
         }
     });
 }
@@ -71,17 +73,18 @@ function findPassword() {
         },
         success: function(response) {
             alert(response);
-            hideSpinner();
+            $('#findPasswordModal').modal('hide');
         },
-        error: function(xhr, status, error) {
+        error: function(xhr, error) {
             alert(xhr.responseText);
+            console.log('에러 발생: '+error);
             hideSpinner();
         }
     });
 }
 
-$('#findId').click(findId);
-$('#findPassword').click(findPassword);
+$('#findId').on('click', findId);
+$('#findPassword').on('click', findPassword);
 
 $(document).ready(function() {
     setupEventListeners();

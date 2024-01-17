@@ -11,7 +11,7 @@ import java.util.Date;
 public class JwtTokenUtil {
     SecretKey key = Keys.secretKeyFor(SignatureAlgorithm.HS512);
     private long expirationTime = 1000 * 60 * 60; // 토큰 유효 시간
-
+    // 토큰 생성
     public String generateToken(String memberId, String email) {
         return Jwts.builder()
                 .setSubject(memberId)
@@ -21,7 +21,7 @@ public class JwtTokenUtil {
                 .signWith(key, SignatureAlgorithm.HS512)
                 .compact();
     }
-
+    // 토큰 유효성 확인 및 유저 아이디 확인
     public String validateTokenAndGetMemberId(String token) {
         try {
             Jws<Claims> claims = Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);

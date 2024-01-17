@@ -71,8 +71,8 @@ function showServiceNameAndPrice() {
             serviceName.text(response.name);
             servicePrice.text(formattedPrice + "원");
         },
-        error: function() {
-            console.log('에러가 발생했습니다.');
+        error: function(error) {
+            console.log('에러 발생: '+error);
         }
     });
 }
@@ -105,8 +105,14 @@ function createSubscription(){
     var paymentAmount = parseInt(servicePriceText.replace(/[^0-9]/g, ''));
     var startDate = $('#subscriptionStartDate').val();
     var period = parseInt($('#subscriptionPeriod').val());
+    var phone = $('#phone1').val() + $('#phone2').val() + $('#phone3').val();
+    var address = $('#sample6_postcode').val() + '/' +
+        $('#sample6_address').val() + '/' +
+        $('#sample6_detailAddress').val() + '/' +
+        $('#sample6_extraAddress').val();
 
-    if(startDate !== null) {
+    // 구독기간과 구독시작일을 이용해 구독 종료일 생성
+    if(startDate !== "") {
         var endDate = new Date(startDate);
         var newMonth = endDate.getMonth() + period;
         endDate.setMonth(newMonth);
@@ -114,6 +120,7 @@ function createSubscription(){
         if (endDate.getDate() < new Date(startDate).getDate()) {
             endDate.setDate(0);
         }
+        var subscriptionEndDate = endDate.toISOString().split('T')[0];
     }
 
     var formData = {
@@ -122,16 +129,11 @@ function createSubscription(){
         paymentAmount: paymentAmount,
         subscriptionPeriod: period,
         subscriptionStartDate: startDate,
-        subscriptionEndDate: endDate.toISOString().split('T')[0],
+        subscriptionEndDate: subscriptionEndDate,
         companyName: $('#companyName').val(),
-        phone: $('#phone1').val() +
-            $('#phone2').val() +
-            $('#phone3').val(),
+        phone: phone,
         email: $('#email').val(),
-        address: $('#sample6_postcode').val() + '/' +
-            $('#sample6_address').val() + '/' +
-            $('#sample6_detailAddress').val() + '/' +
-            $('#sample6_extraAddress').val()
+        address: address
     }
     // 폼 유효성 검사
     if (!form[0].checkValidity()) {
@@ -146,10 +148,10 @@ function createSubscription(){
         data: JSON.stringify(formData),
         success: function(response) {
             alert(response);
-            window.location.href = '/';
+            window.location.href = '/dashboard';
         },
         error: function(xhr, status, error) {
-            console.error('Error occurred:', error);
+            console.error('에러 발생:', error);
             alert('서비스 구독 신청 중 오류가 발생했습니다.');
         }
     });
@@ -167,19 +169,25 @@ $('#serviceType').on('change', function() {
 
 // 스토리지 값 변경 시
 $('#storageCapacity').on('change', onStorageCapacityChange);
-$('#storageCapacity').on('change', function() {
-    showServiceNameAndPrice();
-});
+$('#storageCapacity').on('change', showServiceNameAndPrice);
 
 // 구독 기간 변경 시
-$('#subscriptionPeriod').on('change', function() {
-    showServiceNameAndPrice();
-});
+$('#subscriptionPeriod').on('change', showServiceNameAndPrice);
 
 // 서비스 신청 버튼
-$('#serviceScriptionButton').on('click', createSubscription);
+$('#serviceScriptionButton').on('click', function () {
+    var memberName = $('#memberName').text();
+
+    if(!memberName) {
+        alert("로그인이 필요합니다");
+        return;
+    }else {
+        createSubscription();
+    }
+});
 
 $(document).ready(function() {
+    // 구독 시작일은 신청일 이전 날짜 선택 불가능
     var today = new Date().toISOString().split('T')[0];
     $("#subscriptionStartDate").attr("min", today);
 });

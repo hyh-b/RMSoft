@@ -43,7 +43,7 @@ public class SecurityConfig {
                 .logout(logout -> logout
                         .logoutSuccessUrl("/")
                 )
-                .rememberMe(rememberMe -> rememberMe
+                .rememberMe(rememberMe -> rememberMe   //로그인 유지 1주일
                         .tokenValiditySeconds(60*60*24*7)
                         .key(rememberMeKey)
                         .rememberMeParameter("remember")

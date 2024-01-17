@@ -29,8 +29,9 @@ function submitResetPasswordForm() {
             alert('비밀번호가 재설정되었습니다.');
             window.location.href = '/signin';
         },
-        error: function() {
-            alert('오류가 발생했습니다.');
+        error: function(error) {
+            alert('비밀번호 재설정에 실패');
+            console.log('에러 발생: '+error);
         }
     });
 }

@@ -15,7 +15,7 @@ import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
-public class MemberController {
+public class MemberApiController {
 
     private final MemberService memberService;
 
@@ -24,7 +24,7 @@ public class MemberController {
     private final JwtTokenUtil jwtTokenUtil;
 
     //회원가입 api
-    @PostMapping("/api/signup")
+    @PostMapping("/api/member/signup")
     public ResponseEntity<String> signupMember(@RequestBody MemberDto member) {
 
         memberService.signupMember(member);

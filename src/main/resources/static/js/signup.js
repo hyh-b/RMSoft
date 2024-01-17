@@ -71,8 +71,9 @@ function checkDuplicateId() {
                 isIdChecked = true; // 중복 검사 통과
             }
         },
-        error: function(xhr, status, error) {
-            console.error('Error:', error);
+        error: function(error) {
+            alert('아이디 중복 검사에 실패');
+            console.error('에러 발생: ', error);
         }
     });
 }
@@ -128,7 +129,7 @@ function submitSignupForm() {
     };
 
     $.ajax({
-        url: '/api/signup',
+        url: '/api/member/signup',
         type: 'POST',
         contentType: 'application/json',
         data: JSON.stringify(formData),
@@ -137,8 +138,9 @@ function submitSignupForm() {
             alert(data);
             window.location.href = '/signin';
         },
-        error: function(xhr, status, error) {
-            console.error('Error:', error);
+        error: function(error) {
+            alert('회원가입에 실패');
+            console.error('에러 발생: ', error);
         }
     });
 }

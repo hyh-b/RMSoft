@@ -13,4 +13,6 @@ public interface SubscriptionMapper {
 
     void updateSubscriptionEndDate(
             @Param("extensionEndDate") LocalDate extensionEndDate, @Param("subscriptionCode") int subscriptionCode);
+
+    void updateSubscriptionStatus();
 }

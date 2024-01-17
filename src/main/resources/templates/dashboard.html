@@ -65,7 +65,7 @@
         <li class="nav-item dropdown pe-3">
 
           <a class="nav-link nav-profile d-flex align-items-center pe-0" href="#" data-bs-toggle="dropdown">
-            <span class="d-none d-md-block dropdown-toggle ps-2" th:text="${memberName}+'님'"></span>
+            <span class="d-none d-md-block dropdown-toggle ps-2" id="memberName" th:text="${memberName}+'님'"></span>
           </a><!-- End Profile Iamge Icon -->
 
           <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow profile">
@@ -83,16 +83,6 @@
               <a class="dropdown-item d-flex align-items-center" href="/serviceApplication">
                 <i class="bi bi-journal-text"></i>
                 <span>서비스 신청</span>
-              </a>
-            </li>
-            <li>
-              <hr class="dropdown-divider">
-            </li>
-
-            <li>
-              <a class="dropdown-item d-flex align-items-center" href="/extensionSubscription">
-                <i class="bi bi-journal-text"></i>
-                <span>구독 연장</span>
               </a>
             </li>
             <li>
@@ -129,13 +119,6 @@
       <a class="nav-link collapsed" href="/serviceApplication">
         <i class="bi bi-journal-text"></i>
         <span>서비스 신청</span>
-      </a>
-    </li>
-
-    <li class="nav-item">
-      <a class="nav-link collapsed" href="/extensionSubscription">
-        <i class="bi bi-journal-text"></i>
-        <span>구독 연장</span>
       </a>
     </li>
 
@@ -266,7 +249,7 @@
                       </div>
                     </div>
                   </div>
-                  <button type="button" data-bs-toggle="modal" data-bs-target="#subscriptionExtensionModal" class="btn btn-outline-primary" id="subscriptionExtensionButton">구독 연장</button>
+                  <button type="button" class="btn btn-outline-primary" id="subscriptionExtensionButton">구독 연장</button>
                 </div>
 
 
@@ -280,7 +263,7 @@
             <div class="card">
 
               <div class="card-body">
-                <h5 class="card-title">스토리지 사용량(GB) <span> | 주</span></h5>
+                <h5 class="card-title">스토리지 사용량(GB)(임시 데이터) <span> | 주</span></h5>
 
                 <!-- Line Chart -->
                 <div id="reportsChart"></div>
@@ -289,8 +272,8 @@
                   document.addEventListener("DOMContentLoaded", () => {
                     new ApexCharts(document.querySelector("#reportsChart"), {
                       series: [ {
-                        name: 'Customers',
-                        data: [15, 11, 32, 18, 9, 24, 11]
+                        name: '사용량',
+                        data: [100, 80, 242, 168, 74, 206, 94]
                       }],
                       chart: {
                         height: 350,
@@ -320,12 +303,12 @@
                         width: 2
                       },
                       xaxis: {
-                        type: 'datetime',
-                        categories: ["2018-09-19T00:00:00.000Z", "2018-09-19T01:30:00.000Z", "2018-09-19T02:30:00.000Z", "2018-09-19T03:30:00.000Z", "2018-09-19T04:30:00.000Z", "2018-09-19T05:30:00.000Z", "2018-09-19T06:30:00.000Z"]
+                        type: 'date',
+                        categories: ["2023-12-4", "2023-12-11", "2023-12-18", "2023-12-25", "2024-01-01", "2024-01-08", "2024-01-15"]
                       },
                       tooltip: {
                         x: {
-                          format: 'dd/MM/yy HH:mm'
+                          format: 'dd/MM/yy'
                         },
                       }
                     }).render();
@@ -348,7 +331,7 @@
         <div class="card">
 
           <div class="card-body pb-0">
-            <h5 class="card-title">스토리지 사용량(TB)<span> | 월</span></h5>
+            <h5 class="card-title">스토리지 사용량(TB)(임시 데이터)<span> | 월</span></h5>
 
             <div id="trafficChart" style="min-height: 400px;" class="echart"></div>
 
@@ -383,12 +366,12 @@
                     },
                     data: [
                       {
-                        value: 484,
-                        name: 'Union Ads'
+                        value: 10,
+                        name: '사용량'
                       },
                       {
-                        value: 300,
-                        name: 'Video Ads'
+                        value: 20,
+                        name: '잔여량'
                       }
                     ]
                   }]
@@ -472,117 +455,10 @@
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 
 <script th:inline="javascript">
-  /*<![CDATA[*/
   var services = /*[[${dashboardResponseDto}]]*/ [];
-  /*]]>*/
-
-  // 서비스 명과 가격 출력 메서드
-  function showServiceNameAndPrice() {
-    var extensionPeriod = $('#extensionPeriod').val();
-    var serviceName = $('#name').text();
-    var priceText = $('#price').text();
-    var price = parseInt(priceText.replace(/[^0-9]/g, '')) * extensionPeriod;
-    var formattedPrice = price.toLocaleString('ko-KR');
-
-    $('#serviceName').text(serviceName);
-    $('#servicePrice').text(formattedPrice + "원");
-  }
-
-  function updateDashboardInfo(selectedService) {
-    var price = selectedService.price;
-    var formattedPrice = price.toLocaleString('ko-KR');
-
-    // 페이지의 각 요소에 대한 데이터 업데이트
-    $('#name').text(selectedService.name);
-    $('#price').text(formattedPrice + '원');
-    $('#storage').text(selectedService.storage + "TB");
-    $('#subscriptionEndDate').text("~" + selectedService.subscriptionEndDate);
-    $('#storageAmount').text("1TB(임시 데이터)");
-
-    // 현재 날짜를 가져옴
-    var currentDate = new Date();
-    currentDate.setHours(0, 0, 0, 0);
-
-    // 구독 종료 날짜를 Date 객체로 변환 후 시간을 0시 0분 0초로 설정
-    var subscriptionEndDate = new Date(selectedService.subscriptionEndDate);
-    subscriptionEndDate.setHours(0, 0, 0, 0);
-
-    // 남은 일수 계산
-    var diff = subscriptionEndDate.getTime() - currentDate.getTime();
-    var remainingDays = Math.ceil(diff / (1000 * 60 * 60 * 24));
-
-    // 남은 기간 표시
-    $('#remainingDays').text(" "+ remainingDays + "일");
-  }
-
-  function subscriptionExtension() {
-    var selectedName = $('#serviceName').text();
-    var selectedService = services.find(service => service.name === selectedName);
-    var subscriptionCode = selectedService.subscriptionCode;
-    var extensionPeriod = parseInt($('#extensionPeriod').val());
-    var servicePriceText = $('#servicePrice').text();
-    var paymentAmount = parseInt(servicePriceText.replace(/[^0-9]/g, ''));
-    var subscriptionEndDate = new Date(selectedService.subscriptionEndDate);
-    // subscriptionEndDate에 하루를 더함
-    subscriptionEndDate.setDate(subscriptionEndDate.getDate() + 1);
-
-    // extensionStartDate를 yyyy-MM-dd 형식의 문자열로 변환
-    var extensionStartDate = subscriptionEndDate.toISOString().split('T')[0];
-
-    // extensionStartDate를 Date 객체로 변환
-    var endDate = new Date(extensionStartDate);
-    var newMonth = endDate.getMonth() + extensionPeriod;
-    endDate.setMonth(newMonth);
-    if (endDate.getDate() < new Date(extensionStartDate).getDate()) {
-      endDate.setDate(0);
-    }
-    var extensionEndDate = endDate.toISOString().split('T')[0];
-
-    var formData = {
-      subscriptionCode: subscriptionCode,
-      extensionPeriod: extensionPeriod,
-      paymentAmount: paymentAmount,
-      extensionStartDate: extensionStartDate,
-      extensionEndDate: extensionEndDate
-    }
-
-    $.ajax({
-      url: '/api/subscription/extension',
-      type: 'POST',
-      contentType: 'application/json',
-      data: JSON.stringify(formData),
-      success: function(response) {
-        alert(response);
-        selectedService.subscriptionEndDate = extensionEndDate;
-        updateDashboardInfo(selectedService);
-        $('#subscriptionExtensionModal').modal('hide');
-      },
-      error: function(xhr, status, error) {
-        console.error('Error occurred:', error);
-        alert('구독 연장 신청 중 오류가 발생했습니다.');
-      }
-    });
-  }
-
-  $('#extensionPeriod').on('change', function() {
-    showServiceNameAndPrice();
-  });
-
-  $('#serviceList').on('change', function() {
-    var selectedName = $(this).val();
-    var selectedService = services.find(service => service.name === selectedName);
-
-    updateDashboardInfo(selectedService);
-  });
-  $('#sumitSubscriptionExtension').on('click', subscriptionExtension);
-
-  $(document).ready(function() {
-    $('#subscriptionExtensionModal').on('show.bs.modal', function (e) {
-      showServiceNameAndPrice();
-    });
-  });
 </script>
-
+<!-- dashboard 페이지 javascript-->
+<script src="/js/dashboard.js"></script>
 </body>
 
 </html>

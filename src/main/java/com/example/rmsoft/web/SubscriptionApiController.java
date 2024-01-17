@@ -8,10 +8,10 @@ import org.springframework.web.bind.annotation.*;
 
 @RequiredArgsConstructor
 @RestController
-public class SubscriptionController {
+public class SubscriptionApiController {
 
     private final SubscriptionService subscriptionService;
-
+    // 서비스 구독 신청 api
     @PostMapping("/api/subscription")
     public ResponseEntity<?> createSubscription(@RequestBody SubscriptionDto subscriptionDto) {
         subscriptionService.createSubscription(subscriptionDto);

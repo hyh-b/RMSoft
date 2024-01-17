@@ -27,7 +27,7 @@ public class CustomUserDetailService implements UserDetailsService {
 
         return customUserDetails;
     }
-    /* 로그인한 유저의 memberDto값 */
+    // 로그인한 유저의 memberDto값
     public MemberDto getMemberDto() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
