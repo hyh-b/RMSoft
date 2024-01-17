@@ -1,8 +1,7 @@
-document.getElementById('resetPasswordButton').addEventListener('click', submitResetPasswordForm);
-
+// 비밀번호 변경 폼 제출
 function submitResetPasswordForm() {
-    var password = document.getElementById('password').value;
-    var confirmPassword = document.getElementById('confirmPassword').value;
+    var password = $('#password').val();
+    var confirmPassword = $('#confirmPassword').val();
     var passwordPattern = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{6,}$/;
     var urlParams = new URLSearchParams(window.location.search);
     var token = urlParams.get('token');
@@ -22,7 +21,7 @@ function submitResetPasswordForm() {
     }
 
     $.ajax({
-        url: '/api/password/reset',
+        url: '/api/member/password/reset',
         type: 'PATCH',
         contentType: 'application/json',
         data: JSON.stringify(requestData),
@@ -35,3 +34,7 @@ function submitResetPasswordForm() {
         }
     });
 }
+
+// 비밀번호 변경 버튼
+$('#resetPasswordButton').on('click', submitResetPasswordForm);
+

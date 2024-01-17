@@ -1,28 +1,30 @@
-/* 스피너 출력 */
+// 스피너 출력
 function showSpinner() {
-    document.getElementById('loadingSpinner').style.display = 'block';
+    $('#loadingSpinner').css('display', 'block');
 }
 function hideSpinner() {
-    document.getElementById('loadingSpinner').style.display = 'none';
+    $('#loadingSpinner').css('display', 'none');
 }
 
 function setupEventListeners() {
-    var findIdLink = document.getElementById('findIdLink');
-    var findIdmodal = new bootstrap.Modal(document.getElementById('findIdModal'));
-    var findPasswordLink = document.getElementById('findPasswordLink');
-    var findPasswordmodal = new bootstrap.Modal(document.getElementById('findPasswordModal'));
-    /* 아이디 찾기 링크 */
-    findIdLink.addEventListener('click', function(event) {
+    var findIdLink = $('#findIdLink');
+    var findIdmodal = new bootstrap.Modal($('#findIdModal'));
+    var findPasswordLink = $('#findPasswordLink');
+    var findPasswordmodal = new bootstrap.Modal($('#findPasswordModal'));
+
+    // 아이디 찾기 링크
+    findIdLink.on('click', function(event) {
         event.preventDefault();
         findIdmodal.show();
     });
-    /* 비밀번호 찾기 링크 */
-    findPasswordLink.addEventListener('click', function(event) {
+
+    // 비밀번호 찾기 링크
+    findPasswordLink.on('click', function(event) {
         event.preventDefault();
         findPasswordmodal.show();
     });
 
-    /* 모달 종료 시 입력필드 초기화*/
+    // 모달 종료 시 입력필드 초기화
     findIdmodal._element.addEventListener('hidden.bs.modal', function() {
         $('#emailForIdFind').val('');
         $('#idResult').empty();
@@ -33,12 +35,12 @@ function setupEventListeners() {
     });
 }
 
-/* 아이디 찾기 버튼 메서드*/
+// 아이디 찾기 메서드
 function findId() {
     var email = $('#emailForIdFind').val();
 
     $.ajax({
-        url: '/api/signin/findId',
+        url: '/api/member/id',
         type: 'GET',
         data: { email: email },
         success: function(data) {
@@ -54,14 +56,15 @@ function findId() {
         }
     });
 }
-/* 비밀번호 찾기 버튼 메서드*/
+
+// 비밀번호 찾기 버튼 메서드
 function findPassword() {
     var memberId = $('#idForPasswordFind').val();
     var email = $('#emailForPasswordFind').val();
     showSpinner();
     $.ajax({
-        url: '/api/signin/findPassword',
-        type: 'Post',
+        url: '/api/member/password/recovery',
+        type: 'POST',
         data: {
             memberId: memberId,
             email: email
@@ -78,17 +81,17 @@ function findPassword() {
 }
 
 $('#findId').click(findId);
-
 $('#findPassword').click(findPassword);
 
 $(document).ready(function() {
     setupEventListeners();
 
     const params = new URLSearchParams(window.location.search);
+    // 로그인 실패 시
     if (params.has('fail')) {
         alert('로그인에 실패했습니다. 아이디와 비밀번호를 확인해주세요.');
     }
-
+    // 비밀번호 재설정 토큰이 유효하지 않을 시
     if (params.has('expiredPage')) {
         alert('유효하지 않은 토큰입니다. 메일을 다시 받아주세요.');
     }
