@@ -32,19 +32,19 @@ public class MemberController {
         return ResponseEntity.ok("회원가입에 성공하였습니다.");
     }
     //아이디 중복 확인 api
-    @GetMapping("/api/signup/idCheck")
+    @GetMapping("/api/member/id/exists")
     public boolean idCheck(@RequestParam String memberId) {
         return memberService.idCheck(memberId);
     }
 
     // 아이디 찾기 api
-    @GetMapping("/api/signin/findId")
+    @GetMapping("/api/member/id")
     public List<String> findId(@RequestParam String email) {
         return memberService.findId(email);
     }
 
     // 비밀번호 찾기 api
-    @PostMapping("/api/signin/findPassword")
+    @PostMapping("/api/member/password/recovery")
     public ResponseEntity<?> findPassword(@RequestParam String memberId, @RequestParam String email) throws MessagingException {
         boolean checkIdEmail = memberService.findPassword(memberId, email);
         if(!checkIdEmail){
@@ -56,7 +56,7 @@ public class MemberController {
     }
 
     // 비밀번호 재설정 api
-    @PatchMapping("/api/password/reset")
+    @PatchMapping("/api/member/password/reset")
     public ResponseEntity<?> resetPassword(@RequestBody Map<String,Object> requestBody) {
         String token = (String) requestBody.get("token");
         String password = (String) requestBody.get("password");

@@ -3,6 +3,8 @@ package com.example.rmsoft.security;
 import com.example.rmsoft.dto.MemberDto;
 import com.example.rmsoft.service.MemberService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -24,5 +26,19 @@ public class CustomUserDetailService implements UserDetailsService {
         CustomUserDetails customUserDetails = new CustomUserDetails(memberDto);
 
         return customUserDetails;
+    }
+    /* 로그인한 유저의 memberDto값 */
+    public MemberDto getMemberDto() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        if (authentication.getPrincipal() instanceof UserDetails) {
+            UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+            CustomUserDetails customUserDetails = (CustomUserDetails) userDetails;
+
+            return customUserDetails.getDto();
+        }else {
+
+            return new MemberDto();
+        }
     }
 }
