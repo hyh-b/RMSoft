@@ -1,42 +1,57 @@
 package com.example.rmsoft.web;
 
+import com.example.rmsoft.dto.DashboardResponseDto;
+import com.example.rmsoft.dto.MemberDto;
 import com.example.rmsoft.jwtToken.JwtTokenUtil;
+import com.example.rmsoft.security.CustomUserDetailService;
+import com.example.rmsoft.security.CustomUserDetails;
+import com.example.rmsoft.service.DashboardService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+
+import java.util.List;
 
 @RequiredArgsConstructor
 @Controller
 public class IndexController {
 
     private final JwtTokenUtil jwtTokenUtil;
+    private final DashboardService dashboardService;
+
+    @Autowired
+    private CustomUserDetailService customUserDetailService;
 
     @GetMapping("/")
     public String index(Model model){
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if(authentication != null) {
-            String memberName = authentication.getName();
-            model.addAttribute("memberName",memberName);
-        }
+        MemberDto memberDto = customUserDetailService.getMemberDto();
+        model.addAttribute("memberName", memberDto.getName());
+
         return "index";
     }
 
     @GetMapping("/dashboard")
-    public String dashboard(){
+    public String dashboard(Model model){
+        MemberDto memberDto = customUserDetailService.getMemberDto();
+        model.addAttribute("memberName", memberDto.getName());
+
+        List<DashboardResponseDto> dashboardResponseDtoList= dashboardService.dashboardResponse();
+        model.addAttribute("dashboardResponseDto", dashboardResponseDtoList);
+
         return "dashboard";
     }
 
     @GetMapping("/serviceApplication")
     public String serviceApplication(Model model){
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if(authentication != null) {
-            String memberName = authentication.getName();
-            model.addAttribute("memberName",memberName);
-        }
+        MemberDto memberDto = customUserDetailService.getMemberDto();
+        model.addAttribute("memberName", memberDto.getName());
+
         return "service-application";
     }
 
