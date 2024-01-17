@@ -4,8 +4,8 @@
     <!-- 서비스 신청 -->
     <insert id="subscriptionExtension" parameterType="com.example.rmsoft.dto.SubscriptionExtensionDto">
         INSERT INTO subscription_extension (subscription_code, extension_period, payment_amount,
-                               extension_start_date, extension_end_date, subscription_status)
+                               extension_start_date, extension_end_date)
         VALUES (#{subscriptionCode}, #{extensionPeriod}, #{paymentAmount},
-                #{extensionStartDate}, #{extensionEndDate}, 'S')
+                #{extensionStartDate}, #{extensionEndDate})
     </insert>
 </mapper>
