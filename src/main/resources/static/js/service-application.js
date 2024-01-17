@@ -188,6 +188,13 @@ $('#serviceScriptionButton').on('click', function () {
 
 $(document).ready(function() {
     // 구독 시작일은 신청일 이전 날짜 선택 불가능
-    var today = new Date().toISOString().split('T')[0];
-    $("#subscriptionStartDate").attr("min", today);
+    var currentDate = new Date();
+    var year = currentDate.getFullYear();
+    var month = String(currentDate.getMonth() + 1).padStart(2, '0');
+    var day = String(currentDate.getDate()).padStart(2, '0');
+    var localDateString = year + '-' + month + '-' + day;
+
+    $("#subscriptionStartDate").attr("min", localDateString);
+
+
 });

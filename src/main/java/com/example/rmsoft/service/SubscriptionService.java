@@ -9,6 +9,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.util.TimeZone;
 
 @RequiredArgsConstructor
 @Service
@@ -22,6 +23,7 @@ public class SubscriptionService {
 
     // 구독 신청
     public void createSubscription(SubscriptionDto subscriptionDto) {
+        TimeZone.setDefault(TimeZone.getTimeZone("Asia/Seoul"));
         // 현재 로그인중인 회원 아이디
         MemberDto memberDto = customUserDetailService.getMemberDto();
         subscriptionDto.setMemberId(memberDto.getMemberId());
