@@ -49,29 +49,19 @@ function sample6_execDaumPostcode() {
 
 let isIdChecked = false; // 아이디 중복 검사 확인 변수
 
-// 아이디 입력칸에 문자 입력할 때마다 중복검사 요구
-document.getElementById('id').addEventListener('input', function() {
-    isIdChecked = false;
-});
-// 아이디 중복 확인 버튼
-document.getElementById('idCheck').addEventListener('click', checkDuplicateId);
-// 회원가입 버튼
-document.getElementById('signupButton').addEventListener('click', submitSignupForm);
-
 // 아이디 중복 검사 메서드
 function checkDuplicateId() {
+    let memberId = $('#id').val();
 
-    let memberId = document.getElementById('id').value;
-
-    if(memberId === ''){
-        alert("아이디를 입력해주세요");
-        return ;
-
+    if (memberId === '') {
+        alert('아이디를 입력해주세요');
+        return;
     }
 
     $.ajax({
-        url: `/api/signup/idCheck?memberId=${encodeURIComponent(memberId)}`,
+        url: `/api/member/id/exists`,
         type: 'GET',
+        data: { memberId: memberId },
         dataType: 'json',
         success: function(data) {
             if (data) {
@@ -85,7 +75,6 @@ function checkDuplicateId() {
             console.error('Error:', error);
         }
     });
-
 }
 
 // 회원가입 폼 제출 메서드
@@ -94,12 +83,13 @@ function submitSignupForm() {
         alert('아이디 중복 검사를 진행해주세요.');
         return;
     }
-    var form = document.querySelector('.needs-validation'); // 폼 선택
 
-    var id = document.getElementById('id').value;
+    var form = $('.needs-validation');
+
+    var id = $('#id').val();
     var idPattern = /^[A-Za-z0-9]{6,20}$/;
-    var password = document.getElementById('password').value;
-    var confirmPassword = document.getElementById('confirmPassword').value;
+    var password = $('#password').val();
+    var confirmPassword = $('#confirmPassword').val();
     var passwordPattern = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{6,}$/;
 
     if (!idPattern.test(id)) {
@@ -118,23 +108,23 @@ function submitSignupForm() {
     }
 
     // 폼 유효성 검사
-    if (!form.checkValidity()) {
-        form.classList.add('was-validated');
+    if (!form[0].checkValidity()) {
+        form.addClass('was-validated');
         return;
     }
 
     var formData = {
-        memberId: document.getElementById('id').value,
-        password: document.getElementById('password').value,
-        name: document.getElementById('name').value,
-        email: document.getElementById('email').value,
-        phone: document.getElementById('phone1').value +
-            document.getElementById('phone2').value +
-            document.getElementById('phone3').value,
-        address: document.getElementById('sample6_postcode').value + '/' +
-            document.getElementById('sample6_address').value + '/' +
-            document.getElementById('sample6_detailAddress').value + '/' +
-            document.getElementById('sample6_extraAddress').value
+        memberId: $('#id').val(),
+        password: $('#password').val(),
+        name: $('#name').val(),
+        email: $('#email').val(),
+        phone: $('#phone1').val() +
+            $('#phone2').val() +
+            $('#phone3').val(),
+        address: $('#sample6_postcode').val() + '/' +
+            $('#sample6_address').val() + '/' +
+            $('#sample6_detailAddress').val() + '/' +
+            $('#sample6_extraAddress').val()
     };
 
     $.ajax({
@@ -144,7 +134,7 @@ function submitSignupForm() {
         data: JSON.stringify(formData),
         dataType: 'text',
         success: function(data) {
-            alert(data)
+            alert(data);
             window.location.href = '/signin';
         },
         error: function(xhr, status, error) {
@@ -152,3 +142,14 @@ function submitSignupForm() {
         }
     });
 }
+
+// 아이디 입력칸에 문자 입력할 때마다 중복검사 요구
+$('#id').on('input', function() {
+    isIdChecked = false;
+});
+
+// 아이디 중복 확인 버튼
+$('#idCheck').on('click', checkDuplicateId);
+
+// 회원가입 버튼
+$('#signupButton').on('click', submitSignupForm);
