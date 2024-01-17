@@ -512,19 +512,12 @@
     var remainingDays = Math.ceil(diff / (1000 * 60 * 60 * 24));
 
     // 남은 기간 표시
-    if (remainingDays >= 0) {
-      $('#remainingDays').text(" "+ remainingDays + "일");
-    } else {
-      $('#remainingDays').text(" 구독종료");
-    }
+    $('#remainingDays').text(" "+ remainingDays + "일");
   }
 
   function subscriptionExtension() {
     var selectedName = $('#serviceName').text();
     var selectedService = services.find(service => service.name === selectedName);
-    console.log("서비스명디티오"+selectedName);
-    console.log("서비스명"+selectedService.name);
-    console.log("서비스코드"+selectedService.subscriptionCode);
     var subscriptionCode = selectedService.subscriptionCode;
     var extensionPeriod = parseInt($('#extensionPeriod').val());
     var servicePriceText = $('#servicePrice').text();
@@ -545,8 +538,6 @@
     }
     var extensionEndDate = endDate.toISOString().split('T')[0];
 
-    console.log("tmxkx테이드"+extensionStartDate);
-    console.log("tmxkxdpsem엔드테이드"+extensionEndDate);
     var formData = {
       subscriptionCode: subscriptionCode,
       extensionPeriod: extensionPeriod,
@@ -562,7 +553,9 @@
       data: JSON.stringify(formData),
       success: function(response) {
         alert(response);
-        window.location.href = '/';
+        selectedService.subscriptionEndDate = extensionEndDate;
+        updateDashboardInfo(selectedService);
+        $('#subscriptionExtensionModal').modal('hide');
       },
       error: function(xhr, status, error) {
         console.error('Error occurred:', error);

@@ -7,14 +7,6 @@
         FROM subscription sub
                  JOIN service s ON sub.service_code = s.service_code
         WHERE sub.member_id = #{memberId} AND sub.subscription_status = 'S'
-
-        UNION
-
-        SELECT srv.name, srv.storage, srv.price, sub.subscription_code, se.extension_end_date
-        FROM subscription_extension se
-                 JOIN subscription sub ON se.subscription_code = sub.subscription_code
-                 JOIN service srv ON sub.service_code = srv.service_code
-        WHERE se.subscription_status = 'S' AND sub.member_id = #{memberId}
     </select>
 
 </mapper>
