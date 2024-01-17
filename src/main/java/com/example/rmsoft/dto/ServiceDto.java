@@ -7,7 +7,7 @@ import lombok.Setter;
 @Setter
 public class ServiceDto {
 
-    private String type;
+    private String name;
     private String storage;
     private int price;
 }

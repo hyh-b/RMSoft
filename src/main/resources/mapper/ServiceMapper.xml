@@ -1,7 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.example.rmsoft.mapper.ServiceMapper">
+    <!-- 서비스명, 가격 출력-->
     <select id="getServiceTypeAndPrice" resultType="com.example.rmsoft.dto.ServiceDto">
-        select type, price from service where type like #{serviceType} and storage = #{storage}
+        select name, price from service where name like #{serviceType} and storage = #{storage}
+    </select>
+    <!-- 서비스 코드 구하기-->
+    <select id="getServiceCode" parameterType="String" resultType="Int">
+        select service_code from service where name = #{serviceName}
     </select>
 </mapper>

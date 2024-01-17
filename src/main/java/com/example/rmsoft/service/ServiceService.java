@@ -15,4 +15,8 @@ public class ServiceService {
         String serviceTypePattern = serviceType+"%";
         return serviceMapper.getServiceTypeAndPrice(serviceTypePattern, storage);
     }
+
+    public int getServiceCode(String serviceName) {
+        return serviceMapper.getServiceCode(serviceName);
+    }
 }
