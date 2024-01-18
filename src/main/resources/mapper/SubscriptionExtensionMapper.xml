@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.example.rmsoft.mapper.SubscriptionExtensionMapper">
-    <!-- 서비스 신청 -->
+    <!-- 구독 연장 신청 -->
     <insert id="subscriptionExtension" parameterType="com.example.rmsoft.dto.SubscriptionExtensionDto">
         INSERT INTO subscription_extension (subscription_code, extension_period, payment_amount,
                                extension_start_date, extension_end_date)
