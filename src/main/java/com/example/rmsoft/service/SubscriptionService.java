@@ -43,8 +43,9 @@ public class SubscriptionService {
 
     // 매일 자정에 구독 상태 갱신
     @Scheduled(cron = "0 0 0 * * *") // 매일 자정에 실행
-    public void updateSubscriptionStatus() {
-        subscriptionMapper.updateSubscriptionStatus();
+    public void updateExpireSubscriptionStatus() {
+        subscriptionMapper.updateExpireSubscriptionStatus();
+        subscriptionMapper.updateStartSubscriptionStatus();
     }
 
 }

@@ -18,8 +18,12 @@
     <update id="updateSubscriptionEndDate">
         update subscription set subscription_end_date = #{extensionEndDate} where subscription_code = #{subscriptionCode}
     </update>
-    <!-- 구독 상태 갱신-->
-    <update id="updateSubscriptionStatus">
-        update subscription set subscription_status = 'N' where subscription_end_date &lt; curdate() and subscription_status = 'S'
+    <!-- 구독 종료된 서비스 구독 상태 갱신-->
+    <update id="updateExpireSubscriptionStatus">
+        update subscription set subscription_status = 'E' where subscription_end_date &lt; curdate() and subscription_status = 'S'
+    </update>
+    <!-- 구독 시작된 서비스 구독 상태 갱신-->
+    <update id="updateStartSubscriptionStatus">
+        update subscription set subscription_status = 'S' where subscription_start_date &lt;= curdate() and subscription_status = 'N'
     </update>
 </mapper>
