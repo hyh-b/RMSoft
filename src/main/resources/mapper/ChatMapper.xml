@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.rmsoft.mapper.ChatMapper">
+    <!-- 채팅 입력-->
+    <insert id="insertChatMessage" parameterType="com.example.rmsoft.dto.ChatMessageDto">
+        insert into chat_message (member_id, chat_code, message, write_time, is_read)
+        values (#{memberId}, #{chatCode}, #{message}, now(), #{isRead})
+    </insert>
+    <!-- 채팅 코드 반환-->
+    <select id="findChatCode" resultType="Integer" parameterType="String">
+        select chat_code from chat_room where member_id = #{memberId}
+    </select>
+    <!-- 채팅 메세지 반환-->
+    <select id="findChatMessage" resultType="com.example.rmsoft.dto.ChatMessageDto">
+        select * from chah_message where chat_code = #{chatCode}
+    </select>
+
+    <!-- 채팅 읽음 -->
+    <update id="updateMessageReadStatus">
+        UPDATE chat_message SET is_read = #{isRead} WHERE message_code = #{messageCode}
+    </update>
+
+    <!-- 채팅방 생성-->
+    <insert id="createChatRoom" parameterType="String">
+        insert into chat_room (member_id) values (#{memberId})
+    </insert>
+
+</mapper>
