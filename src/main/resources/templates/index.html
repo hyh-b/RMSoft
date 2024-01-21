@@ -198,7 +198,7 @@
   <div class="container" >
 
     <div class="chat-bar" id="chatBar">
-      <button onclick="toggleChat()">
+      <button class="toggleChatButton">
         <svg xmlns="http://www.w3.org/2000/svg" class="bi bi-chat-dots" viewBox="0 0 16 16">
           <path d="M5 8a1 1 0 1 1-2 0 1 1 0 0 1 2 0zm4 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0zm3 1a1 1 0 1 0 0-2 1 1 0 0 0 0 2z"/>
           <path d="m2.165 15.803.02-.004c1.83-.363 2.948-.842 3.468-1.105A9.06 9.06 0 0 0 8 15c4.418 0 8-3.134 8-7s-3.582-7-8-7-8 3.134-8 7c0 1.76.743 3.37 1.97 4.6a10.437 10.437 0 0 1-.524 2.318l-.003.011a10.722 10.722 0 0 1-.244.637c-.079.186.074.394.273.362a21.673 21.673 0 0 0 .693-.125zm.8-3.108a1 1 0 0 0-.287-.801C1.618 10.83 1 9.468 1 8c0-3.192 3.004-6 7-6s7 2.808 7 6c0 3.193-3.004 6-7 6a8.06 8.06 0 0 1-2.088-.272 1 1 0 0 0-.711.074c-.387.196-1.24.57-2.634.893a10.97 10.97 0 0 0 .398-2z"/>
@@ -210,9 +210,9 @@
     <div class="mesgs" id="chatInterface" style="display: none">
       <div class="chat-header">
         <h3 class="center-header">채팅 상담</h3>
-        <button class="close-chat" onclick="toggleChat()">X</button>
+        <button class="close-chat toggleChatButton">X</button>
       </div>
-      <div class="msg_history">
+      <div class="msg_history" id="chating">
 
         <div class="chat-box-single-line">
           <abbr class="timestamp">October 8th, 2015</abbr>
@@ -233,34 +233,12 @@
               solutions</p>
             <span class="time_date"> 11:01 AM    |    June 9</span> </div>
         </div>
-        <div class="incoming_msg">
-          <div class="incoming_msg_img"> <img src="https://ptetutorials.com/images/user-profile.png" alt="sunil"> </div>
-          <div class="received_msg">
-            <div class="received_withd_msg">
-              <p>Test, which is a new approach to have</p>
-              <span class="time_date"> 11:01 AM    |    Yesterday</span></div>
-          </div>
-        </div>
-        <div class="outgoing_msg">
-          <div class="sent_msg">
-            <p>Apollo University, Delhi, India Test</p>
-            <span class="time_date"> 11:01 AM    |    Today</span> </div>
-        </div>
-        <div class="incoming_msg">
-          <div class="incoming_msg_img"> <img src="https://ptetutorials.com/images/user-profile.png" alt="sunil"> </div>
-          <div class="received_msg">
-            <div class="received_withd_msg">
-              <p>We work directly with our designers and suppliers,
-                and sell direct to you, which means quality, exclusive
-                products, at a price anyone can afford.</p>
-              <span class="time_date"> 11:01 AM    |    Today</span></div>
-          </div>
-        </div>
+
       </div>
       <div class="type_msg">
         <div class="input_msg_write">
-          <input type="text" class="write_msg" placeholder="Type a message" />
-          <button class="msg_send_btn" type="button"><i class="fa fa-paper-plane-o" aria-hidden="true"></i></button>
+          <input type="text" class="write_msg" id="chatting" placeholder="Type a message" />
+          <button class="msg_send_btn" type="button"><i id="sendMessageButton" class="fa fa-paper-plane-o" aria-hidden="true"></i></button>
         </div>
       </div>
     </div>
