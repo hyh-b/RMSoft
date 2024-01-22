@@ -7,7 +7,7 @@
         values (#{memberId}, #{chatCode}, #{message}, now(), #{isRead})
     </insert>
     <!-- 채팅 코드 반환-->
-    <select id="findChatCode" resultType="Integer" parameterType="String">
+    <select id="findChatCode" resultType="int" parameterType="String">
         select chat_code from chat_room where member_id = #{memberId}
     </select>
     <!-- 채팅 메세지 반환-->
@@ -21,8 +21,12 @@
     </update>
 
     <!-- 채팅방 생성-->
-    <insert id="createChatRoom" parameterType="String">
+    <insert id="createChatRoom" parameterType="com.example.rmsoft.dto.ChatRoomDto" useGeneratedKeys="true" keyProperty="chatCode">
         insert into chat_room (member_id) values (#{memberId})
     </insert>
+
+    <select id="checkChatRoom" parameterType="String" resultType="Boolean">
+        select exists(select 1 from chat_room where member_id = #{memberId})
+    </select>
 
 </mapper>

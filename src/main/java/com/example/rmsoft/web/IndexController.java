@@ -29,6 +29,7 @@ public class IndexController {
     public String index(Model model){
         MemberDto memberDto = customUserDetailService.getMemberDto();
         model.addAttribute("memberName", memberDto.getName());
+        model.addAttribute("memberId", memberDto.getMemberId());
 
         return "index";
     }
@@ -74,6 +75,13 @@ public class IndexController {
     @GetMapping("/chat")
     public String chat(){
         return "chat";
+    }
+
+    @GetMapping("/admin")
+    public String admin(Model model){
+        MemberDto memberDto = customUserDetailService.getMemberDto();
+        model.addAttribute("memberId", memberDto.getMemberId());
+        return "admin";
     }
 
 }

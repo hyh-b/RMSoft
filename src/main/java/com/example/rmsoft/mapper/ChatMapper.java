@@ -1,6 +1,7 @@
 package com.example.rmsoft.mapper;
 
 import com.example.rmsoft.dto.ChatMessageDto;
+import com.example.rmsoft.dto.ChatRoomDto;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -16,5 +17,7 @@ public interface ChatMapper {
 
     void updateMessageReadStatus(@Param("isRead") char isRead, @Param("messageCode") int messageCode);
 
-    void createChatRoom(String memberId);
+    void createChatRoom(ChatRoomDto chatRoomDto);
+
+    boolean checkChatRoom(String memberId);
 }

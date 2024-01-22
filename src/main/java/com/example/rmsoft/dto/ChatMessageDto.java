@@ -12,5 +12,4 @@ public class ChatMessageDto {
     private String message;
     private char isRead;
 
-
 }

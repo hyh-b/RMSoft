@@ -1,6 +1,7 @@
 package com.example.rmsoft.service;
 
 import com.example.rmsoft.dto.ChatMessageDto;
+import com.example.rmsoft.dto.ChatRoomDto;
 import com.example.rmsoft.mapper.ChatMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -29,7 +30,14 @@ public class ChatService {
         chatMapper.updateMessageReadStatus(isRead, messageCode);
     }
 
-    public void createChatRoom(String memberId) {
-        chatMapper.createChatRoom(memberId);
+    public int createChatRoom(String memberId) {
+        ChatRoomDto chatRoomDto = new ChatRoomDto();
+        chatRoomDto.setMemberId(memberId);
+        chatMapper.createChatRoom(chatRoomDto);
+        return chatRoomDto.getChatCode();
+    }
+
+    public boolean checkChatRoom(String memberId) {
+        return chatMapper.checkChatRoom(memberId);
     }
 }
