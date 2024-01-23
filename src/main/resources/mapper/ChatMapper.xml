@@ -4,7 +4,7 @@
     <!-- 채팅 입력-->
     <insert id="insertChatMessage" parameterType="com.example.rmsoft.dto.ChatMessageDto">
         insert into chat_message (member_id, chat_code, message, write_time, is_read)
-        values (#{memberId}, #{chatCode}, #{message}, now(), #{isRead})
+        values (#{memberId}, #{chatCode}, #{message}, #{writeTime}, #{isRead})
     </insert>
     <!-- 채팅 코드 반환-->
     <select id="findChatCode" resultType="int" parameterType="String">
@@ -27,6 +27,13 @@
 
     <select id="checkChatRoom" parameterType="String" resultType="Boolean">
         select exists(select 1 from chat_room where member_id = #{memberId})
+    </select>
+
+    <select id="getChatMessage" parameterType="int" resultType="com.example.rmsoft.dto.ChatMessageDto">
+        select member_id, chat_code, message, write_time, is_read
+        from chat_message
+        where chat_code = #{chatCode}
+        order by write_time asc
     </select>
 
 </mapper>

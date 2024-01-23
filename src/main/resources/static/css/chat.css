@@ -143,3 +143,16 @@ img{ max-width:100%;}
     font-size: 16px;
     cursor: pointer;
 }
+
+.message_content {
+    display: flex;
+    align-items: center;
+}
+
+.unread_count {
+    font-size: 0.8em;
+    color: dodgerblue;
+    margin-left: 5px; /* 상대방 메시지의 경우 */
+    margin-right: 5px; /* 내 메시지의 경우 */
+}
+

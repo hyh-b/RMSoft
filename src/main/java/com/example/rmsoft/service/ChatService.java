@@ -15,6 +15,7 @@ public class ChatService {
     private final ChatMapper chatMapper;
 
     public void insertChatMessage(ChatMessageDto chatMessageDto) {
+
         chatMapper.insertChatMessage(chatMessageDto);
     }
 
@@ -39,5 +40,9 @@ public class ChatService {
 
     public boolean checkChatRoom(String memberId) {
         return chatMapper.checkChatRoom(memberId);
+    }
+
+    public List<ChatMessageDto> getChatMessage(int chatCode) {
+        return chatMapper.getChatMessage(chatCode);
     }
 }

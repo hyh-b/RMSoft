@@ -60,6 +60,7 @@ function findChatCode() {
         success: function(chatCode) {
             console.log('챗코드 확인:'+chatCode);
             webSocketOpen(chatCode);
+            getChatMessage();
             chatInterface.style.display = "block";
         },
         error: function(error) {
@@ -68,19 +69,71 @@ function findChatCode() {
     });
 }
 
+function getChatMessage() {
+    console.log("겟메시지 호ㅊㄹ");
+    $.ajax({
+        url: '/api/chat/message',
+        type: 'GET',
+        data: { chatCode: chatCode },
+        success: function(messageList) {
+            console.log("겟메시지 "+messageList);
+            showMessage(messageList);
+        },
+        error: function(error) {
+            console.error('메세지 반환 오류:', error);
+        }
+    });
+}
+
+function showMessage(messageList) {
+    messageList.forEach(function (message) {
+        var isMyMessage = message.memberId === memberId;
+        var messageContent = '';
+        var unreadDisplay = message.unreadCount === 'N' ? '1' : ''; // 'N'이면 '1'을, 아니면 공백을 표시
+        if (isMyMessage) {
+            // 내 메시지
+            messageContent = `
+                <div class="outgoing_msg">
+                    <div class="sent_msg">
+                        <div class="message_content">
+                            <span class="unread_count">${unreadDisplay}</span>
+                            <p>${message.message}</p>
+                        </div>
+                        <span class="time_date">${formatTime(message.writeTime)}</span>
+                    </div>
+                </div>`;
+        } else {
+            // 상대방 메시지
+            messageContent = `
+                <div class="incoming_msg">
+                    <div class="received_msg">
+                        <div class="received_withd_msg">
+                            <div class="message_content">
+                                <p>${message.message}</p>
+                                <span class="time_date">${formatTime(message.writeTime)}</span>
+                            </div>
+                            <span class="unread_count">${unreadDisplay}</span>
+                        </div>
+                    </div>
+                </div>`;
+        }
+
+        $("#messageHistory").append(messageContent);
+    })
+}
+
 var webSocket;
 
 function webSocketOpen(chatCodeParam){
     chatCode = chatCodeParam;
-    alert("열림");
     webSocket = new WebSocket("ws://" + location.host + "/ws/chat/"+chatCode);
     webSocketEvent();
 }
 
 function webSocketClose() {
-    alert("닫힘");
     if(webSocket) {
         webSocket.close(); // 웹소켓 연결 종료
+        chatInterface.style.display = "none";
     }
 }
 
@@ -93,18 +146,20 @@ function webSocketEvent() {
         var msg = data.data;
 
         if(msg != null && msg.trim() != ''){
-            var d = JSON.parse(msg);
-            if (d.type == "getId") {
-                $("#sessionId").val(d.sessionId); // 세션 ID 저장
-            } else if (d.type == "message") {
-                var isOwnMessage = d.sessionId === $("#sessionId").val(); // 자신이 보낸 메시지인지 확인
+            var newMessage = JSON.parse(msg);
+            if (newMessage.type == "getId") {
+                $("#sessionId").val(newMessage.sessionId); // 세션 ID 저장
+            } else if (newMessage.type == "message") {
+                var isOwnMessage = newMessage.sessionId === $("#sessionId").val(); // 자신이 보낸 메시지인지 확인
+                var messageDate = new Date(newMessage.writeTime);
+                var timeString = messageDate.toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'});
                 var messageContent;
                 if (isOwnMessage) {
                     // 자신이 보낸 메시지
                     messageContent = "<div class='outgoing_msg'>" +
                         "<div class='sent_msg'>" +
-                        "<p>" + d.message + "</p>" +
-                        "<span class='time_date'>11:01 AM</span>" + // 시간은 예시입니다.
+                        "<p>" + newMessage.message + "</p>" +
+                        "<span class='time_date'>"+timeString+"</span>" + // 시간은 예시입니다.
                         "</div>" +
                         "</div>";
                 } else {
@@ -112,8 +167,8 @@ function webSocketEvent() {
                     messageContent = "<div class='incoming_msg'>" +
                         "<div class='received_msg'>" +
                         "<div class='received_withd_msg'>" +
-                        "<p>" + d.message + "</p>" +
-                        "<span class='time_date'>11:01 AM</span>" + // 시간은 예시입니다.
+                        "<p>" + newMessage.message + "</p>" +
+                        "<span class='time_date'>"+timeString+"</span>" + // 시간은 예시입니다.
                         "</div>" +
                         "</div>" +
                         "</div>";
@@ -122,30 +177,50 @@ function webSocketEvent() {
                 $("#messageHistory").append(messageContent);
                 scrollToBottom();
             } else {
-                console.warn("unknown type!", d);
+                console.warn("unknown type!", newMessage);
             }
         }
     };
 
     document.addEventListener("keypress", function(e){
-        console.log("엔터");
         if(e.keyCode === 13){
             send();
         }
     });
 }
 
+function formatTime(writeTime) {
+    var date = new Date(writeTime);
+    return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+}
+
+
+function getCurrentTimeString() {
+    var now = new Date();
+
+    var year = now.getFullYear();
+    var month = String(now.getMonth() + 1).padStart(2, '0'); // 월은 0부터 시작하므로 1을 더해줍니다.
+    var day = String(now.getDate()).padStart(2, '0');
+    var hours = String(now.getHours()).padStart(2, '0');
+    var minutes = String(now.getMinutes()).padStart(2, '0');
+    var seconds = String(now.getSeconds()).padStart(2, '0');
+
+    return year + '-' + month + '-' + day + ' ' + hours + ':' + minutes + ':' + seconds;
+}
+
 function send() {
 
     var message = $('#writeMessage').val(); // 입력 필드에서 메시지 가져오기
     var sessionId = $("#sessionId").val();
+    var currentTime = getCurrentTimeString();
     if(message.trim() != '') {
         var chatMessage = {
             type: 'message',
             memberId: memberId,
             chatCode: chatCode,
             message: message,
-            sessionId: sessionId
+            sessionId: sessionId,
+            writeTime: currentTime
         };
 
         webSocket.send(JSON.stringify(chatMessage)); // 웹소켓을 통해 메시지 전송

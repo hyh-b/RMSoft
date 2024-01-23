@@ -15,6 +15,7 @@ import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -36,6 +37,7 @@ public class WebSocketHandler extends TextWebSocketHandler {
         String memberId = obj.get("memberId").asText();
         int chatCode = obj.get("chatCode").asInt();
         String messageText = obj.get("message").asText();
+        String writeTime = obj.get("writeTime").asText();
 
         // 채팅방 찾기
         HashMap<String, Object> chatRoomMap = null;
@@ -57,14 +59,17 @@ public class WebSocketHandler extends TextWebSocketHandler {
             }
         }
 
-        ChatMessageDto chatMessageDto = new ChatMessageDto();
-        chatMessageDto.setMemberId(memberId);
-        chatMessageDto.setChatCode(chatCode);
-        chatMessageDto.setMessage(messageText);
-        chatMessageDto.setIsRead(isRead);
+        ChatMessageDto chatMessageDto = ChatMessageDto.builder()
+                .memberId(memberId)
+                .chatCode(chatCode)
+                .message(messageText)
+                .isRead(isRead)
+                .writeTime(writeTime)
+                .build();
 
         // 채팅 메시지를 데이터베이스에 저장
         chatService.insertChatMessage(chatMessageDto);
+
         String stringChatCode = obj.get("chatCode").asText();
         HashMap<String, Object> temp = new HashMap<>();
         if (webSocketSessionList.size() > 0) {

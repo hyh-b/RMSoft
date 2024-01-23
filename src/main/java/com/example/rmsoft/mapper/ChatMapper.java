@@ -5,6 +5,7 @@ import com.example.rmsoft.dto.ChatRoomDto;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Mapper
@@ -20,4 +21,6 @@ public interface ChatMapper {
     void createChatRoom(ChatRoomDto chatRoomDto);
 
     boolean checkChatRoom(String memberId);
+
+    List<ChatMessageDto> getChatMessage(int chatCode);
 }
