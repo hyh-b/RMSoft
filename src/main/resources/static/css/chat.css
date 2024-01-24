@@ -150,9 +150,13 @@ img{ max-width:100%;}
 }
 
 .unread_count {
-    font-size: 0.8em;
+    font-size: 1em;
     color: dodgerblue;
     margin-left: 5px; /* 상대방 메시지의 경우 */
     margin-right: 5px; /* 내 메시지의 경우 */
+    font-weight: bold;
 }
 
+.hidden-text {
+    display: none;
+}

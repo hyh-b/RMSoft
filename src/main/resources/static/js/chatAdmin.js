@@ -1,31 +1,111 @@
 
-function toggleChat() {
+var webSocket;
+var sessionId;
+var chatCode;
+var chatInterface = document.getElementById('chatInterface');
 
-    var chatInterface = document.getElementById("chatInterface");
-    if (chatInterface.style.display === "none") {
-        chatInterface.style.display = "block";
-        webSocketOpen();
-    } else {
-        chatInterface.style.display = "none";
-        webSocketClose();
-    }
+$('#closeChatButton').on('click', function (){
+    webSocketClose();
+    chatInterface.style.display = 'none';
+    $("#messageHistory").text('');
+    const chatItems = document.querySelectorAll('.chat_list');
+    chatItems.forEach(chatItem => {
+        chatItem.classList.remove('active_chat');
+    });
+});
+
+$('#sendMessageButton').on('click', send);
+document.addEventListener('DOMContentLoaded', function() {
+    const chatItems = document.querySelectorAll('.chat_list');
+
+    chatItems.forEach(item => {
+        item.addEventListener('dblclick', function() {
+            chatItems.forEach(chatItem => {
+                chatItem.classList.remove('active_chat');
+            });
+
+            this.classList.add('active_chat');
+
+            if (webSocket) {
+                webSocketClose();
+            }
+            $("#messageHistory").text('');
+            chatCode = this.getAttribute('data-chat-code');
+            webSocketOpen(chatCode);
+            getChatMessage();
+            if (chatInterface) {
+                chatInterface.style.display = 'block';
+            }
+        });
+    });
+});
+
+function getChatMessage() {
+    $.ajax({
+        url: '/api/chat/message',
+        type: 'GET',
+        data: { chatCode: chatCode },
+        success: function(messageList) {
+            showMessage(messageList);
+        },
+        error: function(error) {
+            console.error('메세지 반환 오류:', error);
+        }
+    });
 }
 
-$('.toggleChatButton').on('click', toggleChat);
-$('#sendMessageButton').on('click', send);
+function showMessage(messageList) {
+    messageList.forEach(function (message) {
+        var isMyMessage = message.memberId === memberId;
+        var messageContent = '';
+        var unreadDisplay = message.isRead === 'N' ? '1' : ''; // 'N'이면 '1'을, 아니면 공백을 표시
+        if (isMyMessage) {
+            // 내 메시지
+            messageContent = `
+                <div class="outgoing_msg">
+                    <div class="sent_msg">
+                        <div class="message_content">
+                            <span class="unread_count">${unreadDisplay}</span>
+                            <p>${message.message}</p>
+                        </div>
+                        <span class="time_date">${formatTime(message.writeTime)}</span>
+                    </div>
+                </div>`;
+        } else {
+            // 상대방 메시지
+            messageContent = `
+                <div class="incoming_msg">
+                    <div class="received_msg">
+                        <div class="received_withd_msg">
+                            <div class="message_content">
+                                <p>${message.message}</p>
+                                <span class="unread_count">${unreadDisplay}</span>
+                            </div>
+                            <span class="time_date">${formatTime(message.writeTime)}</span>
+                        </div>
+                    </div>
+                </div>`;
+        }
 
-var webSocket;
+        $("#messageHistory").append(messageContent);
+        scrollToBottom();
+    })
+}
 
-function webSocketOpen(){
-    alert("열림");
-    webSocket = new WebSocket("ws://" + location.host + "/chating/"+$("#roomNumber").val());
+function formatTime(writeTime) {
+    var date = new Date(writeTime);
+    return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+}
+
+function webSocketOpen(chatCode){
+    webSocket = new WebSocket("ws://" + location.host + "/ws/chat/"+chatCode);
     webSocketEvent();
 }
 
 function webSocketClose() {
-    alert("닫힘");
     if(webSocket) {
         webSocket.close(); // 웹소켓 연결 종료
+        webSocket = null;
     }
 }
 
@@ -34,54 +114,56 @@ function webSocketEvent() {
         //소켓이 열리면 동작
     }
 
-    /*webSocket.onmessage = function(data) {
-        alert("메세지옴");
-        var msg = data.data;
-        if(msg != null && msg.trim() != ''){
-            var d = JSON.parse(msg);
-            if(d.type == "getId"){
-                var si = d.sessionId != null ? d.sessionId : "";
-                if(si != ''){
-                    $("#sessionId").val(si);
-                }
-            }else if(d.type == "message"){
-                if(d.sessionId == $("#sessionId").val()){
-                    $("#messageHistory").append("<div class='outgoing_msg'>"+"<div class='sent_msg'>"+"<p>" + d.msg + "</p>"
-                        +"<span class='time_date'>"+"11:01 AM"+"</span></div></div>");
-                    scrollToBottom();
-                }else{
-                    $("#messageHistory").append("<div class='incoming_msg'>"+"<div class='received_msg'>"
-                        +"<div class='received_withd_msg'>"+"<p>" + d.msg + "</p>"
-                        +"<span class='time_date'>"+"11:01 AM"+"</span></div></div></div>");
-                    scrollToBottom();
-                }
-
-            }else{
-                console.warn("unknown type!")
-            }
-
-        }
-    }*/
-
     webSocket.onmessage = function(data) {
         var msg = data.data;
+
         if(msg != null && msg.trim() != ''){
-            var d = JSON.parse(msg);
-            if(d.type == "getId"){
-                $("#sessionId").val(d.sessionId);
-            } else if(d.type == "message"){
-                // 세션 ID가 현재 세션과 다르면 상대방이 보낸 메시지로 간주
-                if(d.sessionId !== $("#sessionId").val()){
-                    $("#messageHistory").append("<div class='incoming_msg'>" +
+            var newMessage = JSON.parse(msg);
+            if (newMessage.type == "getId") {
+                sessionId = newMessage.sessionId; // 세션 ID 저장
+                /*console.log("받는메세지"+newMessage.memberId);
+                console.log("내아이디"+memberId);
+                if(newMessage.memberId != memberId) {
+                    $('.unread_count').text('');
+                }*/
+            }else if (newMessage.type == "joined") {
+                console.log("누구들어옴");
+                $('.unread_count').text('');
+
+            } else if (newMessage.type == "message") {
+                var isOwnMessage = newMessage.sessionId === sessionId; // 자신이 보낸 메시지인지 확인
+                var unreadDisplay = newMessage.isRead === 'N' ? '1' : ''; // 'N'이면 '1'을, 아니면 공백을 표시
+                var messageContent;
+                if (isOwnMessage) {
+                    // 자신이 보낸 메시지
+                    messageContent = "<div class='outgoing_msg'>" +
+                        "<div class='sent_msg'>" +
+                        "<div class='message_content'>"+
+                        "<span class='unread_count'>"+unreadDisplay+"</span>"+
+                        "<p>" + newMessage.message + "</p>" +
+                        "</div>"+
+                        "<span class='time_date'>"+formatTime(newMessage.writeTime)+"</span>" +
+                        "</div>" +
+                        "</div>";
+                } else {
+                    // 다른 사용자가 보낸 메시지
+                    messageContent = "<div class='incoming_msg'>" +
                         "<div class='received_msg'>" +
                         "<div class='received_withd_msg'>" +
-                        "<p>" + d.msg + "</p>" +
-                        "<span class='time_date'>11:01 AM</span>" +
-                        "</div></div></div>");
-                    scrollToBottom();
+                        "<div class='message_content'>"+
+                        "<p>" + newMessage.message + "</p>" +
+                        "<span class='unread_count'>"+unreadDisplay+"</span>"+
+                        "</div>"+
+                        "<span class='time_date'>"+formatTime(newMessage.writeTime)+"</span>" +
+                        "</div>" +
+                        "</div>" +
+                        "</div>";
                 }
+
+                $("#messageHistory").append(messageContent);
+                scrollToBottom();
             } else {
-                console.warn("unknown type!");
+                console.warn("unknown type!", newMessage);
             }
         }
     };
@@ -93,23 +175,37 @@ function webSocketEvent() {
     });
 }
 
+function getCurrentTimeString() {
+    var now = new Date();
+
+    var year = now.getFullYear();
+    var month = String(now.getMonth() + 1).padStart(2, '0'); // 월은 0부터 시작하므로 1을 더해줍니다.
+    var day = String(now.getDate()).padStart(2, '0');
+    var hours = String(now.getHours()).padStart(2, '0');
+    var minutes = String(now.getMinutes()).padStart(2, '0');
+    var seconds = String(now.getSeconds()).padStart(2, '0');
+
+    return year + '-' + month + '-' + day + ' ' + hours + ':' + minutes + ':' + seconds;
+}
+
 function send() {
-    var messageContent = $("#writeMessage").val();
-    var memberId = $("#memberId").val();
-    var option ={
-        type: "message",
-        chatCoder: $("#roomNumber").val(),
-        memberId: memberId,
-        sessionId : $("#sessionId").val(),
-        message : messageContent
+
+    var message = $('#writeMessage').val(); // 입력 필드에서 메시지 가져오기
+    var currentTime = getCurrentTimeString();
+    if(message.trim() != '') {
+        var chatMessage = {
+            type: 'message',
+            memberId: memberId,
+            chatCode: chatCode,
+            message: message,
+            sessionId: sessionId,
+            writeTime: currentTime
+        };
+
+        webSocket.send(JSON.stringify(chatMessage)); // 웹소켓을 통해 메시지 전송
+        $('#writeMessage').val(''); // 메시지 필드 초기화
+        scrollToBottom();
     }
-    webSocket.send(JSON.stringify(option))
-
-    var newMessage = "<div class='outgoing_msg'><div class='sent_msg'><p>" + messageContent + "</p><span class='time_date'> 11:01 AM </span></div></div>";
-    $("#messageHistory").append(newMessage);
-
-    $('#writeMessage').val("");
-    scrollToBottom();
 }
 
 function scrollToBottom() {

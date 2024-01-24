@@ -2,12 +2,17 @@ package com.example.rmsoft.webSocket;
 
 import com.example.rmsoft.dto.ChatMessageDto;
 import com.example.rmsoft.dto.ChatRoomDto;
+import com.example.rmsoft.dto.MemberDto;
+import com.example.rmsoft.security.CustomUserDetailService;
+import com.example.rmsoft.security.CustomUserDetails;
 import com.example.rmsoft.service.ChatService;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
@@ -15,10 +20,12 @@ import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 
 import java.io.IOException;
+import java.security.Principal;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Component
 @RequiredArgsConstructor
@@ -27,6 +34,7 @@ public class WebSocketHandler extends TextWebSocketHandler {
 
     private final ChatService chatService;
     List<HashMap<String, Object>> webSocketSessionList = new ArrayList<>();
+    Map<String, List<WebSocketSession>> chatSessionsMap = new HashMap<>();
     private final ObjectMapper objectMapper;
 
     @Override
@@ -70,6 +78,11 @@ public class WebSocketHandler extends TextWebSocketHandler {
         // 채팅 메시지를 데이터베이스에 저장
         chatService.insertChatMessage(chatMessageDto);
 
+        ObjectNode modifiableObj = (ObjectNode) obj;
+        String isReadStr = String.valueOf(isRead);
+
+        modifiableObj.put("isRead", isReadStr);
+
         String stringChatCode = obj.get("chatCode").asText();
         HashMap<String, Object> temp = new HashMap<>();
         if (webSocketSessionList.size() > 0) {
@@ -89,7 +102,7 @@ public class WebSocketHandler extends TextWebSocketHandler {
                 WebSocketSession wss = (WebSocketSession) temp.get(k);
                 if (wss != null) {
                     try {
-                        wss.sendMessage(new TextMessage(obj.toString()));
+                        wss.sendMessage(new TextMessage(modifiableObj.toString()));
 
                     } catch (IOException e) {
                         e.printStackTrace();
@@ -99,7 +112,6 @@ public class WebSocketHandler extends TextWebSocketHandler {
         }
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public void afterConnectionEstablished(WebSocketSession session) throws Exception {
         //소켓 연결
@@ -131,9 +143,23 @@ public class WebSocketHandler extends TextWebSocketHandler {
         ObjectNode jsonNode = objectMapper.createObjectNode();
         jsonNode.put("type", "getId");
         jsonNode.put("sessionId", session.getId());
+        session.sendMessage(new TextMessage(objectMapper.writeValueAsString(jsonNode)));
 
-        String jsonStr = objectMapper.writeValueAsString(jsonNode);
-        session.sendMessage(new TextMessage(jsonStr));
+        // 다른 참가자들에게 'joined' 메시지 전송
+        for (String sessionId : chatRoomMap.keySet()) {
+            if (!sessionId.equals("chatCode") && !sessionId.equals(session.getId())) {
+                WebSocketSession participantSession = (WebSocketSession) chatRoomMap.get(sessionId);
+                if (participantSession != null) {
+                    try {
+                        ObjectNode data = objectMapper.createObjectNode();
+                        data.put("type", "joined");
+                        participantSession.sendMessage(new TextMessage(objectMapper.writeValueAsString(data)));
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }
     }
 
     @Override

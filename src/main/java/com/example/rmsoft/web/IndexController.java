@@ -1,9 +1,11 @@
 package com.example.rmsoft.web;
 
+import com.example.rmsoft.dto.ChatMessageDto;
 import com.example.rmsoft.dto.DashboardResponseDto;
 import com.example.rmsoft.dto.MemberDto;
 import com.example.rmsoft.jwtToken.JwtTokenUtil;
 import com.example.rmsoft.security.CustomUserDetailService;
+import com.example.rmsoft.service.ChatService;
 import com.example.rmsoft.service.DashboardService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +23,7 @@ public class IndexController {
 
     private final JwtTokenUtil jwtTokenUtil;
     private final DashboardService dashboardService;
+    private final ChatService chatService;
 
     @Autowired
     private CustomUserDetailService customUserDetailService;
@@ -72,15 +75,14 @@ public class IndexController {
         return "reset-password";
     }
 
-    @GetMapping("/chat")
-    public String chat(){
-        return "chat";
-    }
-
     @GetMapping("/admin")
     public String admin(Model model){
         MemberDto memberDto = customUserDetailService.getMemberDto();
         model.addAttribute("memberId", memberDto.getMemberId());
+
+        List<ChatMessageDto> chatList = chatService.getChatList();
+        model.addAttribute("chatList", chatList);
+
         return "admin";
     }
 

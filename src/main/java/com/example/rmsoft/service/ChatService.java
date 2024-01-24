@@ -45,4 +45,8 @@ public class ChatService {
     public List<ChatMessageDto> getChatMessage(int chatCode) {
         return chatMapper.getChatMessage(chatCode);
     }
+
+    public List<ChatMessageDto> getChatList() {
+        return chatMapper.getChatList();
+    }
 }

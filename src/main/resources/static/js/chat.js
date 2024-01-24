@@ -6,6 +6,7 @@ $('.toggleChatButton').on('click', function (){
         checkChatRoom();
     }else {
         webSocketClose();
+        $("#messageHistory").text('');
     }
 });
 
@@ -41,8 +42,6 @@ function createChatRoom(memberId) {
         type: 'POST',
         data: { memberId: memberId },
         success: function(chatCode) {
-
-            console.log('채팅룸 생성 성공:'+chatCode);
             webSocketOpen(chatCode);
             chatInterface.style.display = "block";
         },
@@ -58,7 +57,6 @@ function findChatCode() {
         type: 'GET',
         data: { memberId: memberId },
         success: function(chatCode) {
-            console.log('챗코드 확인:'+chatCode);
             webSocketOpen(chatCode);
             getChatMessage();
             chatInterface.style.display = "block";
@@ -70,13 +68,11 @@ function findChatCode() {
 }
 
 function getChatMessage() {
-    console.log("겟메시지 호ㅊㄹ");
     $.ajax({
         url: '/api/chat/message',
         type: 'GET',
         data: { chatCode: chatCode },
         success: function(messageList) {
-            console.log("겟메시지 "+messageList);
             showMessage(messageList);
         },
         error: function(error) {
@@ -89,7 +85,7 @@ function showMessage(messageList) {
     messageList.forEach(function (message) {
         var isMyMessage = message.memberId === memberId;
         var messageContent = '';
-        var unreadDisplay = message.unreadCount === 'N' ? '1' : ''; // 'N'이면 '1'을, 아니면 공백을 표시
+        var unreadDisplay = message.isRead === 'N' ? '1' : ''; // 'N'이면 '1'을, 아니면 공백을 표시
         if (isMyMessage) {
             // 내 메시지
             messageContent = `
@@ -110,15 +106,16 @@ function showMessage(messageList) {
                         <div class="received_withd_msg">
                             <div class="message_content">
                                 <p>${message.message}</p>
-                                <span class="time_date">${formatTime(message.writeTime)}</span>
+                                <span class="unread_count">${unreadDisplay}</span>
                             </div>
-                            <span class="unread_count">${unreadDisplay}</span>
+                            <span class="time_date">${formatTime(message.writeTime)}</span>
                         </div>
                     </div>
                 </div>`;
         }
 
         $("#messageHistory").append(messageContent);
+        scrollToBottom();
     })
 }
 
@@ -133,6 +130,7 @@ function webSocketOpen(chatCodeParam){
 function webSocketClose() {
     if(webSocket) {
         webSocket.close(); // 웹소켓 연결 종료
+        webSocket = null;
         chatInterface.style.display = "none";
     }
 }
@@ -149,17 +147,22 @@ function webSocketEvent() {
             var newMessage = JSON.parse(msg);
             if (newMessage.type == "getId") {
                 $("#sessionId").val(newMessage.sessionId); // 세션 ID 저장
+
+            }else if (newMessage.type == "joined") {
+                $('.unread_count').html('&nbsp;');
             } else if (newMessage.type == "message") {
                 var isOwnMessage = newMessage.sessionId === $("#sessionId").val(); // 자신이 보낸 메시지인지 확인
-                var messageDate = new Date(newMessage.writeTime);
-                var timeString = messageDate.toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'});
+                var unreadDisplay = newMessage.isRead === 'N' ? '1' : ''; // 'N'이면 '1'을, 아니면 공백을 표시
                 var messageContent;
                 if (isOwnMessage) {
                     // 자신이 보낸 메시지
                     messageContent = "<div class='outgoing_msg'>" +
                         "<div class='sent_msg'>" +
+                        "<div class='message_content'>"+
+                        "<span class='unread_count'>"+unreadDisplay+"</span>"+
                         "<p>" + newMessage.message + "</p>" +
-                        "<span class='time_date'>"+timeString+"</span>" + // 시간은 예시입니다.
+                        "</div>"+
+                        "<span class='time_date'>"+formatTime(newMessage.writeTime)+"</span>" +
                         "</div>" +
                         "</div>";
                 } else {
@@ -167,8 +170,11 @@ function webSocketEvent() {
                     messageContent = "<div class='incoming_msg'>" +
                         "<div class='received_msg'>" +
                         "<div class='received_withd_msg'>" +
+                        "<div class='message_content'>"+
                         "<p>" + newMessage.message + "</p>" +
-                        "<span class='time_date'>"+timeString+"</span>" + // 시간은 예시입니다.
+                        "<span class='unread_count'>"+unreadDisplay+"</span>"+
+                        "</div>"+
+                        "<span class='time_date'>"+formatTime(newMessage.writeTime)+"</span>" +
                         "</div>" +
                         "</div>" +
                         "</div>";
@@ -227,7 +233,6 @@ function send() {
         $('#writeMessage').val(''); // 메시지 필드 초기화
         scrollToBottom();
     }
-
 }
 
 function scrollToBottom() {

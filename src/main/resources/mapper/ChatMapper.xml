@@ -25,15 +25,39 @@
         insert into chat_room (member_id) values (#{memberId})
     </insert>
 
+    <!-- 채팅방 생성 여부 -->
     <select id="checkChatRoom" parameterType="String" resultType="Boolean">
         select exists(select 1 from chat_room where member_id = #{memberId})
     </select>
 
+    <!-- 채팅 기록 가져오기 -->
     <select id="getChatMessage" parameterType="int" resultType="com.example.rmsoft.dto.ChatMessageDto">
         select member_id, chat_code, message, write_time, is_read
         from chat_message
         where chat_code = #{chatCode}
         order by write_time asc
+    </select>
+
+    <!-- 채팅 목록 -->
+    <select id="getChatList" resultType="com.example.rmsoft.dto.ChatMessageDto">
+        SELECT cr.member_id, cm.chat_code, cm.message, cm.write_time, cm.is_read
+        FROM
+        chat_message cm
+        JOIN (
+        SELECT chat_code, MAX(write_time) AS latest_time
+        FROM
+        chat_message
+        GROUP BY
+        chat_code
+        ) AS latest_messages
+        ON cm.chat_code = latest_messages.chat_code AND cm.write_time = latest_messages.latest_time
+        JOIN
+        chat_room cr ON cm.chat_code = cr.chat_code
+        WHERE
+        cr.member_id &lt;&gt; 'rmsoftAdmin'
+        ORDER BY
+        cm.write_time DESC;
+
     </select>
 
 </mapper>

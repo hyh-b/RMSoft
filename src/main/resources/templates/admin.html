@@ -162,51 +162,31 @@
         <div class="inbox_people">
           <div class="headind_srch">
             <div class="recent_heading">
-              <h4>Recent</h4>
-            </div>
-            <div class="srch_bar">
-              <div class="stylish-input-group">
-                <input type="text" class="search-bar"  placeholder="Search" >
-                <span class="input-group-addon">
-                <button type="button"> <i class="fa fa-search" aria-hidden="true"></i> </button>
-                </span> </div>
-            </div>
-          </div>
-          <div class="inbox_chat" id="roomList">
-            <div class="chat_list active_chat">
-              <div class="chat_people">
-                <div class="chat_img"> <img src="https://ptetutorials.com/images/user-profile.png" alt="sunil"> </div>
-                <div class="chat_ib">
-                  <h5>Sunil Rajput <span class="chat_date">Dec 25</span></h5>
-                  <p>Test, which is a new approach to have all solutions
-                    astrology under one roof.</p>
-                </div>
-              </div>
-            </div>
-            <div class="chat_list">
-              <div class="chat_people">
-                <div class="chat_img"> <img src="https://ptetutorials.com/images/user-profile.png" alt="sunil"> </div>
-                <div class="chat_ib">
-                  <h5>Sunil Rajput <span class="chat_date">Dec 25</span></h5>
-                  <p>Test, which is a new approach to have all solutions
-                    astrology under one roof.</p>
-                </div>
-              </div>
+              <h4>상담목록</h4>
             </div>
 
+          </div>
+          <div class="inbox_chat" id="roomList">
+            <div class="chat_list" id="" th:each="chatData : ${chatList}" th:data-chat-code="${chatData.chatCode}">
+              <div class="chat_people">
+                <div class="chat_img"> <img src="https://ptetutorials.com/images/user-profile.png" alt="sunil"> </div>
+                <div class="chat_ib">
+                  <h5>
+                    [[${chatData.memberId}]] <span class="chat_date" th:text="${chatData.writeTime.substring(0, 10)}"></span>
+                  </h5>
+                  <p th:text="${chatData.message}"></p>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
 
-        <input type="hidden" id="sessionId" value="">
-        <input type="hidden" id="roomNumber" value="${roomNumber}">
-        <input type="hidden" id="memberId" th:value="${memberId}">
-        <p th:text="${roomNuber}"></p>
         <div class="mesgs" id="chatInterface" style="display: none">
-          <div class="msg_history" id="messageHistory">
+          <div class="chat-header">
+            <button class="close-chat" id="closeChatButton">X</button>
+          </div>
 
-            <div class="chat-box-single-line">
-              <abbr class="timestamp">October 8th, 2015</abbr>
-            </div>
+          <div class="msg_history" id="messageHistory">
 
             <div class="incoming_msg">
               <div class="incoming_msg_img"> <img src="https://ptetutorials.com/images/user-profile.png" alt="sunil"> </div>
@@ -235,14 +215,6 @@
         </div>
       </div>
 
-      <table class="inputTable">
-        <tr>
-          <th>방 제목</th>
-          <th><input type="text" name="roomName" id="roomName"></th>
-          <th><button id="createRoom">방 만들기</button></th>
-        </tr>
-      </table>
-
       <p class="text-center top_spac"> Design by <a target="_blank" href="https://www.linkedin.com/in/sunil-rajput-nattho-singh/">Sunil Rajput</a></p>
 
     </div></div>
@@ -263,78 +235,6 @@
 
   <a href="#" class="back-to-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
 
-
-  <script type="text/javascript">
-    var ws;
-    window.onload = function(){
-      getRoom();
-      createRoom();
-    }
-
-    function getRoom(){
-      commonAjax('/getRoom', "", 'post', function(result){
-        createChatingRoom(result);
-      });
-    }
-
-    function createRoom(){
-      $("#createRoom").click(function(){
-        var msg = {	roomName : $('#roomName').val()	};
-
-        commonAjax('/createRoom', msg, 'post', function(result){
-          createChatingRoom(result);
-        });
-
-        $("#roomName").val("");
-      });
-    }
-
-    function goRoom(number, name){
-      var chatInterface = document.getElementById("chatInterface");
-      chatInterface.style.display = "block";
-
-      // 웹소켓 연결 시작
-      webSocketOpen(roomNumber);
-
-      // 현재 채팅방 정보 업데이트 (선택적)
-      //document.getElementById("currentRoomName").innerText = roomName;
-    }
-
-    function createChatingRoom(res){
-      if(res != null){
-        var tag = "";
-        res.forEach(function(d, idx){
-          var rn = d.roomName.trim();
-          var roomNumber = d.roomNumber;
-          tag += "<div class='chat_list' onclick='goRoom(\""+roomNumber+"\", \""+rn+"\")'>"+
-                    "<div class='chat_people'>"+
-                      "<div class='chat_ib'>"+
-                        "<h5>"+(idx+1)+"<span class='chat_date'>+Dec 25</span></h5>"+
-                        "<p>"+rn+"</p>"+
-                      "</div> </div></div>";
-        });
-        $("#roomList").empty().append(tag);
-      }
-    }
-
-    function commonAjax(url, parameter, type, calbak, contentType){
-      $.ajax({
-        url: url,
-        data: parameter,
-        type: type,
-        contentType : contentType!=null?contentType:'application/x-www-form-urlencoded; charset=UTF-8',
-        success: function (res) {
-          calbak(res);
-        },
-        error : function(err){
-          console.log('error');
-          calbak(err);
-        }
-      });
-    }
-  </script>
-
-
   <!-- Vendor JS Files -->
   <script src="/assets/vendor/apexcharts/apexcharts.min.js"></script>
   <script src="/assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
@@ -347,6 +247,10 @@
 
   <!-- Template Main JS File -->
   <script src="/assets/js/main.js"></script>
+
+  <script th:inline="javascript">
+    var memberId = /*[[${memberId}]]*/ [];
+  </script>
 
   <!-- 채팅 js파일 -->
   <script src="/js/chatAdmin.js"></script>

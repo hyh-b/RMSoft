@@ -52,8 +52,6 @@ public class ChatApiController {
     public ResponseEntity<?> getChatMessage(@RequestParam int chatCode) {
         try {
             List<ChatMessageDto> messageList = chatService.getChatMessage(chatCode);
-            System.out.println("컨트롤라");
-            System.out.println("컨트롤라"+messageList.get(1));
             return ResponseEntity.ok(messageList);
         } catch (Exception e) {
             e.printStackTrace();

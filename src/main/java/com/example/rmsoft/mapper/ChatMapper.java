@@ -23,4 +23,6 @@ public interface ChatMapper {
     boolean checkChatRoom(String memberId);
 
     List<ChatMessageDto> getChatMessage(int chatCode);
+
+    List<ChatMessageDto> getChatList();
 }

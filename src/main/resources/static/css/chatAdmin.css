@@ -43,6 +43,7 @@ img{ max-width:100%;}
 .srch_bar .input-group-addon { margin: 0 0 0 -27px;}
 
 .chat_ib h5{ font-size:15px; color:#464646; margin:0 0 8px 0;}
+.chat_ib h5 .memberId{ font-size:15px; color:#464646; margin:0 0 8px 0;}
 .chat_ib h5 span{ font-size:13px; float:right;}
 .chat_ib p{ font-size:14px; color:#989898; margin:auto}
 .chat_img {
@@ -94,7 +95,7 @@ img{ max-width:100%;}
 .mesgs {
     background-color: white;
     float: left;
-    padding: 30px 15px 0 25px;
+    padding: 5px 15px 0 25px;
     width: 60%;
 }
 
@@ -136,6 +137,35 @@ img{ max-width:100%;}
 }
 .messaging { padding: 0 0 50px 0;}
 .msg_history {
+    padding-top: 35px;
     height: 516px;
     overflow-y: auto;
 }
+
+.chat-header {
+    position: relative;
+    /* 기존 스타일... */
+}
+
+.close-chat {
+    position: absolute;
+    right: 10px;    /* 오른쪽으로부터의 거리 */
+    border: none;
+    background: none;
+    font-size: 20px;
+    cursor: pointer;
+}
+
+.message_content {
+    display: flex;
+    align-items: center;
+}
+
+.unread_count {
+    font-size: 1em;
+    color: dodgerblue;
+    margin-left: 5px; /* 상대방 메시지의 경우 */
+    margin-right: 5px; /* 내 메시지의 경우 */
+    font-weight: bold;
+}
+
