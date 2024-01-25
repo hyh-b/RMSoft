@@ -6,7 +6,9 @@
         SELECT s.name, s.storage, s.price, sub.subscription_code, sub.subscription_end_date
         FROM subscription sub
                  JOIN service s ON sub.service_code = s.service_code
-        WHERE sub.member_id = #{memberId} AND sub.subscription_status = 'S'
+                 JOIN subscription_status ss ON sub.subscription_code = ss.subscription_code
+        WHERE sub.member_id = #{memberId} AND ss.status = 'S'
     </select>
+
 
 </mapper>
