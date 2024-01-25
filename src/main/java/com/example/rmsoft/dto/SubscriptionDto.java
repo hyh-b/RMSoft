@@ -9,6 +9,7 @@ import java.time.LocalDate;
 @Setter
 public class SubscriptionDto {
 
+    private int subscriptionCode;
     private String memberId;
     private int serviceCode;
     private String serviceType;

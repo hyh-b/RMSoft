@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.rmsoft.mapper.SubscriptionStatusMapper">
+    <!-- 서비스 신청 -->
+    <insert id="createSubscriptionStatus" parameterType="com.example.rmsoft.dto.SubscriptionStatusDto">
+        INSERT INTO subscription_status (
+            subscription_code, status
+        )
+        VALUES (
+                   #{subscriptionCode}, #{status}
+               )
+    </insert>
+
+</mapper>

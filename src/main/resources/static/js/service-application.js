@@ -148,7 +148,7 @@ function createSubscription(){
         data: JSON.stringify(formData),
         success: function(response) {
             alert(response);
-            window.location.href = '/dashboard';
+            window.location.href = '/';
         },
         error: function(xhr, status, error) {
             console.error('에러 발생:', error);
