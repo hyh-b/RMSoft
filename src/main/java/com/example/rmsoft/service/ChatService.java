@@ -27,8 +27,8 @@ public class ChatService {
         return chatMapper.findChatMessage(chatCode);
     }
 
-    public void updateMessageReadStatus(char isRead, int messageCode) {
-        chatMapper.updateMessageReadStatus(isRead, messageCode);
+    public void updateMessageReadStatus(String memberId) {
+        chatMapper.updateMessageReadStatus(memberId);
     }
 
     public int createChatRoom(String memberId) {
@@ -46,7 +46,7 @@ public class ChatService {
         return chatMapper.getChatMessage(chatCode);
     }
 
-    public List<ChatMessageDto> getChatList() {
-        return chatMapper.getChatList();
+    public List<ChatMessageDto> getChatList(String memberId) {
+        return chatMapper.getChatList(memberId);
     }
 }

@@ -16,8 +16,8 @@
     </select>
 
     <!-- 채팅 읽음 -->
-    <update id="updateMessageReadStatus">
-        UPDATE chat_message SET is_read = #{isRead} WHERE message_code = #{messageCode}
+    <update id="updateMessageReadStatus" parameterType="String">
+        UPDATE chat_message SET is_read = 'Y' WHERE member_id &lt;&gt; #{memberId} and is_read = 'N'
     </update>
 
     <!-- 채팅방 생성-->
@@ -54,7 +54,7 @@
         JOIN
         chat_room cr ON cm.chat_code = cr.chat_code
         WHERE
-        cr.member_id &lt;&gt; 'rmsoftAdmin'
+        cr.member_id &lt;&gt; #{memeberId}
         ORDER BY
         cm.write_time DESC;
 

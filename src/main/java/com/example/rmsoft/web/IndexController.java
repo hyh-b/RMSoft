@@ -80,7 +80,7 @@ public class IndexController {
         MemberDto memberDto = customUserDetailService.getMemberDto();
         model.addAttribute("memberId", memberDto.getMemberId());
 
-        List<ChatMessageDto> chatList = chatService.getChatList();
+        List<ChatMessageDto> chatList = chatService.getChatList(memberDto.getMemberId());
         model.addAttribute("chatList", chatList);
 
         return "admin";

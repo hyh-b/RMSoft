@@ -58,7 +58,7 @@ function findChatCode() {
         data: { memberId: memberId },
         success: function(chatCode) {
             webSocketOpen(chatCode);
-            getChatMessage();
+            updateMessageReadStatus();
             chatInterface.style.display = "block";
         },
         error: function(error) {
@@ -117,6 +117,21 @@ function showMessage(messageList) {
         $("#messageHistory").append(messageContent);
         scrollToBottom();
     })
+}
+
+function updateMessageReadStatus() {
+    $.ajax({
+        url: '/api/chat/readStatus',
+        type: 'PATCH',
+        data: { memberId : memberId },
+        success: function(response) {
+            console.log(response);
+            getChatMessage();
+        },
+        error: function(error) {
+            console.error('읽음 상태 업데이트 오류:', error);
+        }
+    });
 }
 
 var webSocket;

@@ -16,7 +16,7 @@ public interface ChatMapper {
 
     List<ChatMessageDto> findChatMessage(int chatCode);
 
-    void updateMessageReadStatus(@Param("isRead") char isRead, @Param("messageCode") int messageCode);
+    void updateMessageReadStatus(String memberId);
 
     void createChatRoom(ChatRoomDto chatRoomDto);
 
@@ -24,5 +24,5 @@ public interface ChatMapper {
 
     List<ChatMessageDto> getChatMessage(int chatCode);
 
-    List<ChatMessageDto> getChatList();
+    List<ChatMessageDto> getChatList(String memberId);
 }

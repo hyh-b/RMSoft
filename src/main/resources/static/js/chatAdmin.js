@@ -32,7 +32,7 @@ document.addEventListener('DOMContentLoaded', function() {
             $("#messageHistory").text('');
             chatCode = this.getAttribute('data-chat-code');
             webSocketOpen(chatCode);
-            getChatMessage();
+            updateMessageReadStatus();
             if (chatInterface) {
                 chatInterface.style.display = 'block';
             }
@@ -90,6 +90,21 @@ function showMessage(messageList) {
         $("#messageHistory").append(messageContent);
         scrollToBottom();
     })
+}
+
+function updateMessageReadStatus() {
+    $.ajax({
+        url: '/api/chat/readStatus',
+        type: 'PATCH',
+        data: { memberId : memberId },
+        success: function(response) {
+            console.log(response);
+            getChatMessage();
+        },
+        error: function(error) {
+            console.error('읽음 상태 업데이트 오류:', error);
+        }
+    });
 }
 
 function formatTime(writeTime) {

@@ -3,6 +3,7 @@ package com.example.rmsoft.web;
 import com.example.rmsoft.dto.ChatMessageDto;
 import com.example.rmsoft.service.ChatService;
 import lombok.RequiredArgsConstructor;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -56,6 +57,17 @@ public class ChatApiController {
         } catch (Exception e) {
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("메세지가 없습니다.");
+        }
+    }
+
+    @PatchMapping("/api/chat/readStatus")
+    public ResponseEntity<?> updateMessageReadStatus(@RequestParam String memberId) {
+        try {
+            chatService.updateMessageReadStatus(memberId);
+            return ResponseEntity.ok("읽음 상태 업데이트");
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("읽음 상태 업데이트 오류");
         }
     }
 }
