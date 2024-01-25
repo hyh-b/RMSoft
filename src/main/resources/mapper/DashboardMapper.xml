@@ -3,9 +3,16 @@
 <mapper namespace="com.example.rmsoft.mapper.DashboardMapper">
     <!-- 대시보드 구성 요소 -->
     <select id="dashboardResponse" parameterType="String" resultType="com.example.rmsoft.dto.DashboardResponseDto">
-        SELECT s.name, s.storage, s.price, sub.subscription_code, sub.subscription_end_date
+        SELECT s.name, s.storage, s.price, sub.subscription_code,
+               COALESCE(se.extension_end_date, sub.subscription_end_date) AS subscriptionEndDate
         FROM subscription sub
                  JOIN service s ON sub.service_code = s.service_code
+                 LEFT JOIN (
+            SELECT subscription_code,
+                   MAX(extension_end_date) AS extension_end_date
+            FROM subscription_extension
+            GROUP BY subscription_code
+        ) se ON sub.subscription_code = se.subscription_code
                  JOIN subscription_status ss ON sub.subscription_code = ss.subscription_code
         WHERE sub.member_id = #{memberId} AND ss.status = 'S'
     </select>

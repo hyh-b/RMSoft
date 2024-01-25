@@ -18,7 +18,6 @@ public class SubscriptionDto {
     private int paymentAmount;
     private LocalDate subscriptionStartDate;
     private LocalDate subscriptionEndDate;
-    private char subscriptionStatus;
     private String companyName;
     private String phone;
     private String email;

@@ -26,6 +26,7 @@ public class SubscriptionService {
 
     private final ServiceService serviceService;
 
+
     // 구독 신청
     @Transactional
     public void createSubscription(SubscriptionDto subscriptionDto) {
@@ -41,8 +42,6 @@ public class SubscriptionService {
 
         // 생성된 subscription 데이터의 subscriptionCode
         int generatedSubscriptionCode = subscriptionDto.getSubscriptionCode();
-        System.out.println("t서비스코드");
-        System.out.println("t서비스코드 + "+generatedSubscriptionCode);
 
         SubscriptionStatusDto subscriptionStatusDto = new SubscriptionStatusDto();
         subscriptionStatusDto.setSubscriptionCode(generatedSubscriptionCode);
@@ -58,10 +57,11 @@ public class SubscriptionService {
     }
 
     // 매일 자정에 구독 상태 갱신
+    @Transactional
     @Scheduled(cron = "0 0 0 * * *") // 매일 자정에 실행
     public void updateExpireSubscriptionStatus() {
-        subscriptionMapper.updateExpireSubscriptionStatus();
-        subscriptionMapper.updateStartSubscriptionStatus();
+        subscriptionStatusMapper.updateExpireSubscriptionStatus();
+        subscriptionStatusMapper.updateStartSubscriptionStatus();
     }
 
 }

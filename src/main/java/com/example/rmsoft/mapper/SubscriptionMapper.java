@@ -11,10 +11,4 @@ public interface SubscriptionMapper {
 
     void createSubscription(SubscriptionDto subscriptionDto);
 
-    void updateSubscriptionEndDate(
-            @Param("extensionEndDate") LocalDate extensionEndDate, @Param("subscriptionCode") int subscriptionCode);
-
-    void updateExpireSubscriptionStatus();
-
-    void updateStartSubscriptionStatus();
 }

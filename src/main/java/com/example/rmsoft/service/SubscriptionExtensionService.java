@@ -14,14 +14,9 @@ import java.time.LocalDate;
 public class SubscriptionExtensionService {
 
     private final SubscriptionExtensionMapper subscriptionExtensionMapper;
-    private final SubscriptionMapper subscriptionMapper;
     // 구독 연장
     @Transactional
     public void subscriptionExtension(SubscriptionExtensionDto subscriptionExtensionDto) {
-        LocalDate extensionEndDate = subscriptionExtensionDto.getExtensionEndDate();
-        int subscriptionCode = subscriptionExtensionDto.getSubscriptionCode();
-        // 구독 종료일 갱신
-        subscriptionMapper.updateSubscriptionEndDate(extensionEndDate,subscriptionCode);
         // 구독 연장 테이블 데이터 생성
         subscriptionExtensionMapper.subscriptionExtension(subscriptionExtensionDto);
     }

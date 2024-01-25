@@ -11,4 +11,22 @@
                )
     </insert>
 
+    <!-- 구독 종료된 서비스 구독 상태 갱신-->
+    <update id="updateExpireSubscriptionStatus">
+        UPDATE subscription_status ss
+        INNER JOIN (
+        SELECT sub.subscription_code,
+        IFNULL(MAX(se.extension_end_date), sub.subscription_end_date) AS effective_end_date
+        FROM subscription sub
+        LEFT JOIN subscription_extension se ON sub.subscription_code = se.subscription_code
+        GROUP BY sub.subscription_code
+        ) AS sub_end_dates ON ss.subscription_code = sub_end_dates.subscription_code
+        SET ss.status = 'E'
+        WHERE ss.status = 'S'
+        AND sub_end_dates.effective_end_date &lt; CURDATE();
+    </update>
+    <!-- 구독 시작된 서비스 구독 상태 갱신-->
+    <update id="updateStartSubscriptionStatus">
+        update subscription set subscription_status = 'S' where subscription_start_date &lt;= curdate() and subscription_status = 'N'
+    </update>
 </mapper>

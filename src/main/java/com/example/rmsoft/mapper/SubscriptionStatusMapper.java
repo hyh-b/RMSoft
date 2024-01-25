@@ -7,4 +7,8 @@ import org.apache.ibatis.annotations.Mapper;
 public interface SubscriptionStatusMapper {
 
     void createSubscriptionStatus(SubscriptionStatusDto subscriptionStatusDto);
+
+    void updateExpireSubscriptionStatus();
+
+    void updateStartSubscriptionStatus();
 }
