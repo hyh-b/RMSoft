@@ -16,6 +16,7 @@ import java.util.List;
 public class ChatApiController {
     private final ChatService chatService;
 
+    // 채팅방 생성 여부 확인 api
     @GetMapping("/api/chat/check")
     public ResponseEntity<?> checkChatRoom(@RequestParam String memberId) {
         try {
@@ -26,7 +27,7 @@ public class ChatApiController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("에러 발생");
         }
     }
-
+    // 채팅방 생성 api
     @PostMapping("/api/chat/room")
     public ResponseEntity<?> createChatRoom(@RequestParam String memberId) {
         try {
@@ -37,7 +38,7 @@ public class ChatApiController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("채팅방 생성 실패");
         }
     }
-
+    // chatCode 반환 api
     @GetMapping("/api/chat/code")
     public ResponseEntity<?> findChatCode(@RequestParam String memberId) {
         try {
@@ -48,7 +49,7 @@ public class ChatApiController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("chatCode를 찾을 수 없음");
         }
     }
-
+    // 채팅 메세지 반환 api
     @GetMapping("/api/chat/message")
     public ResponseEntity<?> getChatMessage(@RequestParam int chatCode) {
         try {
@@ -59,7 +60,7 @@ public class ChatApiController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("메세지가 없습니다.");
         }
     }
-
+    // 채팅 읽음 상태 업데이트 api
     @PatchMapping("/api/chat/readStatus")
     public ResponseEntity<?> updateMessageReadStatus(@RequestParam String memberId) {
         try {

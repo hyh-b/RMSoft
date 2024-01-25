@@ -14,8 +14,6 @@ public interface ChatMapper {
 
     int findChatCode(String memberId);
 
-    List<ChatMessageDto> findChatMessage(int chatCode);
-
     void updateMessageReadStatus(String memberId);
 
     void createChatRoom(ChatRoomDto chatRoomDto);

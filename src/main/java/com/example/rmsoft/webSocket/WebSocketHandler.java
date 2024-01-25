@@ -33,12 +33,14 @@ import java.util.Map;
 public class WebSocketHandler extends TextWebSocketHandler {
 
     private final ChatService chatService;
+
+    // 세션정보를 담을 리스트
     List<HashMap<String, Object>> webSocketSessionList = new ArrayList<>();
-    Map<String, List<WebSocketSession>> chatSessionsMap = new HashMap<>();
     private final ObjectMapper objectMapper;
 
     @Override
     public void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
+        // 받은 json데이터 파싱
         String msg = message.getPayload();
         JsonNode obj = objectMapper.readTree(msg);
 
@@ -47,7 +49,7 @@ public class WebSocketHandler extends TextWebSocketHandler {
         String messageText = obj.get("message").asText();
         String writeTime = obj.get("writeTime").asText();
 
-        // 채팅방 찾기
+        // chatCode값으로 채팅방 찾기
         HashMap<String, Object> chatRoomMap = null;
         for (HashMap<String, Object> map : webSocketSessionList) {
             if (map.get("chatCode").equals(String.valueOf(chatCode))) {
@@ -67,6 +69,7 @@ public class WebSocketHandler extends TextWebSocketHandler {
             }
         }
 
+        // dto에 저장할 메세지 데이터 세팅
         ChatMessageDto chatMessageDto = ChatMessageDto.builder()
                 .memberId(memberId)
                 .chatCode(chatCode)
@@ -81,27 +84,40 @@ public class WebSocketHandler extends TextWebSocketHandler {
         ObjectNode modifiableObj = (ObjectNode) obj;
         String isReadStr = String.valueOf(isRead);
 
+        // 채팅방에 상대가 존재하는지 확인하기 위한 값
         modifiableObj.put("isRead", isReadStr);
 
         String stringChatCode = obj.get("chatCode").asText();
         HashMap<String, Object> temp = new HashMap<>();
+
+        // webSocketSessionList에 세션 정보가 있는지 확인
         if (webSocketSessionList.size() > 0) {
+
+            // 세션 정보가 있다면 webSocketSessionList를 순회
             for (int i = 0; i < webSocketSessionList.size(); i++) {
+
+                // 현재 HashMap에서 chatCode 추출
                 String sessionChatCode = (String) webSocketSessionList.get(i).get("chatCode");
+
+                // 추출한 chatCode가 현재 메시지의 chatCode와 일치하는지 확인
                 if (sessionChatCode.equals(stringChatCode)) {
+
+                    // 일치하는 경우, 해당 HashMap을 temp에 저장하고 반복문 탈출
                     temp = webSocketSessionList.get(i);
                     break;
                 }
             }
-
+            // 찾은 채팅방(temp) 내의 모든 세션에 대해 반복
             for (String k : temp.keySet()) {
+                // 현재 키가 "chatCode"인 경우, 다음 키로 넘어감 / 다른 키인 세션ID를 찾기 위함
                 if (k.equals("chatCode")) {
                     continue;
                 }
-
+                // 해당 키에 해당하는 WebSocketSession 객체를 가져옴
                 WebSocketSession wss = (WebSocketSession) temp.get(k);
                 if (wss != null) {
                     try {
+                        // WebSocketSession에 JSON 형태의 문자열 메시지 전송
                         wss.sendMessage(new TextMessage(modifiableObj.toString()));
 
                     } catch (IOException e) {
@@ -130,7 +146,8 @@ public class WebSocketHandler extends TextWebSocketHandler {
             }
         }
 
-        if (chatRoomMap == null) { // 새로운 채팅방
+        // 해당 chatCode의 채팅방이 없으면 새로운 채팅방을 생성
+        if (chatRoomMap == null) {
             chatRoomMap = new HashMap<>();
             chatRoomMap.put("chatCode", chatCode);
             webSocketSessionList.add(chatRoomMap);
@@ -145,8 +162,9 @@ public class WebSocketHandler extends TextWebSocketHandler {
         jsonNode.put("sessionId", session.getId());
         session.sendMessage(new TextMessage(objectMapper.writeValueAsString(jsonNode)));
 
-        // 다른 참가자들에게 'joined' 메시지 전송
+        // 채팅방에 있는 다른 참가자들에게 'joined' 메시지 전송
         for (String sessionId : chatRoomMap.keySet()) {
+            // 현재 처리 중인 세션과 chatCode 키는 제외(본인 제외)
             if (!sessionId.equals("chatCode") && !sessionId.equals(session.getId())) {
                 WebSocketSession participantSession = (WebSocketSession) chatRoomMap.get(sessionId);
                 if (participantSession != null) {

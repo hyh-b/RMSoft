@@ -10,10 +10,6 @@
     <select id="findChatCode" resultType="int" parameterType="String">
         select chat_code from chat_room where member_id = #{memberId}
     </select>
-    <!-- 채팅 메세지 반환-->
-    <select id="findChatMessage" resultType="com.example.rmsoft.dto.ChatMessageDto">
-        select * from chah_message where chat_code = #{chatCode}
-    </select>
 
     <!-- 채팅 읽음 -->
     <update id="updateMessageReadStatus" parameterType="String">
